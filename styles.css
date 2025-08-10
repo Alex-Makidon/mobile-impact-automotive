@@ -132,4 +132,17 @@ body{
 }
 @media (max-width: 600px){
   .site-header .header-logo { height: 46px; }
+}/* Header logo - stays small */
+.header-logo {
+  height: 44px;   /* small size for menu */
+  width: auto;
+}
+
+/* Hero logo - large and centered */
+.hero-logo {
+  width: 100%;
+  max-width: 520px;
+  display: block;
+  filter: drop-shadow(0 8px 30px rgba(0,0,0,.35));
+  margin: 0 auto;
 }
