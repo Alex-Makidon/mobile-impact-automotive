@@ -4,14 +4,29 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mobile Impact Automotive | Snellville, GA</title>
+
+  <!-- Your description kept as provided -->
   <meta name="description" content="Family-owneed & Operated Auto Repair. Diagnostics, brakes, oil & filters, suspension, A/C, tires & alignments, Sprinters." />
+
+  <!-- Open Graph / iMessage Preview -->
+  <meta property="og:title" content="Mobile Impact Automotive | Snellville, GA" />
+  <meta property="og:description" content="Family-owned auto repair in Snellville, GA. Diagnostics, brakes, oil & filters, suspension, A/C, tires & alignments, Sprinters." />
+  <meta property="og:image" content="https://alex-makidon.github.io/mobile-impact-automotive/assets/metadata-image.jpg" />
+  <meta property="og:url" content="https://alex-makidon.github.io/mobile-impact-automotive/" />
+  <meta property="og:type" content="website" />
+  <!-- Twitter Card (also used by iMessage previews) -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Mobile Impact Automotive | Snellville, GA" />
+  <meta name="twitter:description" content="Family-owned auto repair in Snellville, GA. Diagnostics, brakes, oil & filters, suspension, A/C, tires & alignments, Sprinters." />
+  <meta name="twitter:image" content="https://alex-makidon.github.io/mobile-impact-automotive/assets/metadata-image.jpg" />
+
   <link rel="icon" sizes="32x32" href="assets/favicon-32.png">
   <link rel="icon" sizes="192x192" href="assets/favicon-512.png">
   <link rel="apple-touch-icon" href="assets/favicon-512.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=7" />
 </head>
 <body>
 
@@ -19,8 +34,7 @@
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="#">
-        <!-- Use a tightly-cropped white PNG if you have it; otherwise keep logo-white.png -->
-        <img src="assets/logo-white.png?v=6" alt="Mobile Impact Automotive logo" class="header-logo" />
+        <img src="assets/logo-white.png?v=7" alt="Mobile Impact Automotive logo" class="header-logo" />
       </a>
       <nav class="nav">
         <a href="#services">Services</a>
@@ -52,7 +66,7 @@
       </div>
 
       <div class="hero-art">
-        <img src="assets/logo-white.png?v=6" alt="" class="hero-logo" />
+        <img src="assets/logo-white.png?v=7" alt="" class="hero-logo" />
       </div>
     </div>
   </section>
@@ -78,29 +92,48 @@
     <div class="container">
       <h2>About</h2>
       <p>Mobile Impact Automotive is a trusted, family-owned shop serving the Snellville community with honest service and expert workmanship. We stand behind our repairs and treat every vehicle like our own.</p>
+      <!-- Optional gallery can go here later -->
     </div>
   </section>
 
   <!-- Reviews -->
- <div class="reviews-rotator">
-  <div class="review-card active">
-    <div class="stars" aria-label="5 star rating">★★★★★</div>
-    <p>“They diagnosed my issue quickly and got me back on the road the same day. Great communication and fair pricing.”</p>
-    <div class="reviewer">— Google reviewer</div>
-  </div>
+  <section id="reviews" class="section">
+    <div class="container">
+      <h2>Reviews</h2>
+      <p class="sub">Real feedback from real customers.</p>
 
-  <div class="review-card">
-    <div class="stars" aria-label="5 star rating">★★★★★</div>
-    <p>“Fantastic service! Honest and friendly staff.”</p>
-    <div class="reviewer">— Google reviewer</div>
-  </div>
+      <div class="reviews-rotator" aria-live="polite">
+        <div class="review-card active">
+          <div class="stars" aria-label="5 star rating">★★★★★</div>
+          <p>“They diagnosed my issue quickly and got me back on the road the same day. Great communication and fair pricing.”</p>
+          <div class="reviewer">— Google reviewer</div>
+        </div>
 
-  <div class="review-card">
-    <div class="stars" aria-label="5 star rating">★★★★★</div>
-    <p>“Quick turnaround and excellent work. Highly recommend!”</p>
-    <div class="reviewer">— Google reviewer</div>
-  </div>
-</div>
+        <div class="review-card">
+          <div class="stars" aria-label="5 star rating">★★★★★</div>
+          <p>“Fantastic service! Honest and friendly staff.”</p>
+          <div class="reviewer">— Google reviewer</div>
+        </div>
+
+        <div class="review-card">
+          <div class="stars" aria-label="5 star rating">★★★★★</div>
+          <p>“Quick turnaround and excellent work. Highly recommend!”</p>
+          <div class="reviewer">— Google reviewer</div>
+        </div>
+
+        <div class="review-dots" role="tablist" aria-label="Reviews"></div>
+      </div>
+
+      <p class="center">
+        <a class="btn btn-outline" href="#" id="google-link" target="_blank" rel="noopener">Read more on Google</a>
+        <!-- TODO: Replace PLACE_ID_HERE with the real Place ID for “Mobile Impact Automotive” -->
+        <a class="btn" href="https://search.google.com/local/writereview?placeid=PLACE_ID_HERE" target="_blank" rel="noopener">
+          Review us on Google
+        </a>
+      </p>
+    </div>
+  </section>
+
   <!-- Contact / Map -->
   <section id="contact" class="section alt">
     <div class="container contact">
@@ -124,7 +157,9 @@
       </div>
 
       <div class="map-card">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3314.02581169949!2d-84.05694428737004!3d33.837444973127035!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88f5bfd60ff01ddb%3A0x56e353b1a2d7b8cc!2sMobile%20Impact%20Automotive!5e0!3m2!1sen!2sus!4v1754799452806!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>     
+        <!-- Your exact pin embed kept -->
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3314.02581169949!2d-84.05694428737004!3d33.837444973127035!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88f5bfd60ff01ddb%3A0x56e353b1a2d7b8cc!2sMobile%20Impact%20Automotive!5e0!3m2!1sen!2sus!4v1754799452806!5m2!1sen!2sus"
+          width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
     </div>
   </section>
@@ -140,51 +175,56 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
-    <script>
-    // Simple review rotator
-    const reviews = [
-      {
-        text: "They diagnosed my issue quickly and got me back on the road the same day. Great communication and fair pricing.",
-        author: "— Google reviewer"
-      },
-      {
-        text: "Excellent service, very knowledgeable and honest. I won’t take my car anywhere else.",
-        author: "— Google reviewer"
-      },
-      {
-        text: "Fast, professional, and affordable. Highly recommended!",
-        author: "— Google reviewer"
-      }
-    ];
 
-    let current = 0;
-    const reviewText = document.getElementById("review-text");
-    const reviewAuthor = document.getElementById("review-author");
+  <!-- Reviews rotator with dots -->
+  <script>
+  (function(){
+    const rotator = document.querySelector('.reviews-rotator');
+    if(!rotator) return;
 
-    function showReview(index) {
-      reviewText.textContent = reviews[index].text;
-      reviewAuthor.textContent = reviews[index].author;
+    const cards = [...rotator.querySelectorAll('.review-card')];
+    const dotsWrap = rotator.querySelector('.review-dots');
+    let i = cards.findIndex(c => c.classList.contains('active'));
+    if(i < 0) i = 0;
+    let timer;
+
+    // build dots
+    cards.forEach((_, idx) => {
+      const b = document.createElement('button');
+      b.className = 'review-dot';
+      b.type = 'button';
+      b.setAttribute('role','tab');
+      b.setAttribute('aria-controls', `review-${idx}`);
+      if(idx === i) b.setAttribute('aria-selected','true');
+      b.addEventListener('click', () => go(idx, true));
+      dotsWrap.appendChild(b);
+    });
+
+    // ids for a11y
+    cards.forEach((c, idx) => c.id = `review-${idx}`);
+
+    function go(next, user=false){
+      cards[i].classList.remove('active');
+      dotsWrap.children[i].setAttribute('aria-selected','false');
+      i = (next + cards.length) % cards.length;
+      cards[i].classList.add('active');
+      dotsWrap.children[i].setAttribute('aria-selected','true');
+      if(user) restart();
     }
 
-    setInterval(() => {
-      current = (current + 1) % reviews.length;
-      showReview(current);
-    }, 4000); // change every 4 seconds
+    function next(){ go(i+1); }
+    function restart(){
+      clearInterval(timer);
+      timer = setInterval(next, 5000);
+    }
 
-    // Show first review on load
-    showReview(current);
+    rotator.addEventListener('mouseenter', ()=>clearInterval(timer));
+    rotator.addEventListener('mouseleave', restart);
+    rotator.addEventListener('focusin', ()=>clearInterval(timer));
+    rotator.addEventListener('focusout', restart);
+
+    restart();
+  })();
   </script>
 </body>
 </html>
-<!-- Open Graph / iMessage Preview -->
-<meta property="og:title" content="Mobile Impact Automotive | Snellville, GA" />
-<meta property="og:description" content="Family-owned auto repair in Snellville, GA. Diagnostics, brakes, oil & filters, suspension, A/C, tires & alignments, Sprinters." />
-<meta property="og:image" content="https://alex-makidon.github.io/mobile-impact-automotive/assets/metadata-image.jpg" />
-<meta property="og:url" content="https://alex-makidon.github.io/mobile-impact-automotive/" />
-<meta property="og:type" content="website" />
-
-<!-- Twitter Card (works for iMessage & others) -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Mobile Impact Automotive | Snellville, GA" />
-<meta name="twitter:description" content="Family-owned auto repair in Snellville, GA. Diagnostics, brakes, oil & filters, suspension, A/C, tires & alignments, Sprinters." />
-<meta name="twitter:image" content="https://alex-makidon.github.io/mobile-impact-automotive/assets/metadata-image.jpg" />
