@@ -5,17 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mobile Impact Automotive | Snellville, GA</title>
 
-  <!-- Description -->
   <meta name="description" content="Family-owned & Operated Auto Repair. Diagnostics, brakes, oil & filters, suspension, A/C, tires & alignments, Sprinters." />
 
-  <!-- Open Graph / iMessage Preview -->
+  <!-- Social preview -->
   <meta property="og:title" content="Mobile Impact Automotive | Snellville, GA" />
   <meta property="og:description" content="Family-owned auto repair in Snellville, GA. Diagnostics, brakes, oil & filters, suspension, A/C, tires & alignments, Sprinters." />
   <meta property="og:image" content="https://alex-makidon.github.io/mobile-impact-automotive/assets/metadata-image.jpg" />
   <meta property="og:url" content="https://alex-makidon.github.io/mobile-impact-automotive/" />
   <meta property="og:type" content="website" />
-
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Mobile Impact Automotive | Snellville, GA" />
   <meta name="twitter:description" content="Family-owned auto repair in Snellville, GA. Diagnostics, brakes, oil & filters, suspension, A/C, tires & alignments, Sprinters." />
@@ -28,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=10" />
+  <link rel="stylesheet" href="styles.css?v=11" />
 </head>
 <body>
 
@@ -36,7 +33,7 @@
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="#">
-        <img src="assets/logo-white.png?v=10" alt="Mobile Impact Automotive logo" class="header-logo" />
+        <img src="assets/logo-white.png?v=11" alt="Mobile Impact Automotive logo" class="header-logo" />
       </a>
       <nav class="nav">
         <a href="#services">Services</a>
@@ -69,13 +66,13 @@
       </div>
 
       <div class="hero-art">
-        <!-- Visual effects behind car -->
-        <span class="exhaust" aria-hidden="true"></span>
-        <span class="tire-smoke" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="skid" aria-hidden="true"></span>
-
-        <!-- The ONE car image -->
-        <img src="assets/logo-white.png?v=10" alt="" class="hero-logo car-drive" />
+        <!-- Car + effects now move together -->
+        <div class="car-drive">
+          <span class="exhaust" aria-hidden="true"></span>
+          <span class="tire-smoke" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="skid" aria-hidden="true"></span>
+          <img src="assets/logo-white.png?v=11" alt="" class="hero-logo" />
+        </div>
       </div>
     </div>
   </section>
@@ -123,7 +120,6 @@
           <p>“Quick turnaround and excellent work. Highly recommend!”</p>
           <div class="reviewer">— Google reviewer</div>
         </div>
-
         <div class="review-dots" role="tablist" aria-label="Reviews"></div>
       </div>
 
@@ -141,7 +137,6 @@
     <div class="container">
       <h2>Gallery</h2>
       <p class="sub">A look around the shop and our work.</p>
-
       <div class="gallery-grid" id="gallery-grid"></div>
     </div>
 
@@ -190,7 +185,6 @@
     </div>
   </footer>
 
-  <!-- Year -->
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
@@ -205,15 +199,7 @@
     if(cards.length === 0) return;
 
     let dotsWrap = rotator.querySelector('.review-dots');
-    if(!dotsWrap){
-      dotsWrap = document.createElement('div');
-      dotsWrap.className = 'review-dots';
-      dotsWrap.setAttribute('role','tablist');
-      dotsWrap.setAttribute('aria-label','Reviews');
-      rotator.appendChild(dotsWrap);
-    } else {
-      dotsWrap.innerHTML = '';
-    }
+    dotsWrap.innerHTML = '';
 
     let i = Math.max(0, cards.findIndex(c => c.classList.contains('active')));
     cards.forEach((c, idx) => c.id = 'review-'+idx);
@@ -322,9 +308,12 @@
   })();
   </script>
 
-  <!-- Start animations cleanly -->
+  <!-- Start at top & start animations -->
   <script>
+    if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+    window.addEventListener('pageshow', function(){ window.scrollTo(0,0); });
     window.addEventListener('load', function(){
+      window.scrollTo(0,0);
       document.body.classList.add('page-loaded');
     });
   </script>
