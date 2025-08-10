@@ -121,3 +121,9 @@ body{
   background-color: white;
   color: #0d2d57; /* your dark blue */
 }
+/* Adjust header logo size */
+.header-logo {
+  max-height: 60px; /* try 60–70px for bigger look */
+  height: auto;
+  width: auto;
+}
