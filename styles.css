@@ -76,7 +76,7 @@ body{
 
 .center{text-align:center}
 
-@media (max-width:900px){
+.logo { height: 44px; }@media (max-width:900px){
   .hero-inner{grid-template-columns:1fr}
   .grid{grid-template-columns:1fr 1fr}
   .contact{grid-template-columns:1fr}
