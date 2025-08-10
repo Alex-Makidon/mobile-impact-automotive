@@ -1,0 +1,87 @@
+/* Mobile Impact Automotive - minimal, clean styles */
+:root{
+  --navy:#0b2a56;
+  --navy-ink:#0a2247;
+  --silver:#c4c9d2;
+  --ink:#0b1220;
+  --text:#1b2430;
+  --bg:#f6f7fb;
+  --white:#fff;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  line-height:1.6;
+}
+
+.container{max-width:1100px;margin:0 auto;padding:0 20px}
+
+.site-header{
+  position:sticky;top:0;z-index:10;
+  background:var(--navy);
+  color:var(--white);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.header-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;
+}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.logo{height:44px}
+.nav a{color:#fff;text-decoration:none;margin-left:18px;font-weight:600;opacity:.9}
+.nav a:hover{opacity:1}
+.btn{
+  display:inline-block;border-radius:10px;padding:12px 18px;
+  text-decoration:none;font-weight:700;border:2px solid transparent;
+}
+.btn-primary{background:#fff;color:var(--navy)}
+.btn-outline{border-color:#fff;color:#fff}
+.btn-outline:hover{background:#fff;color:var(--navy)}
+
+.hero{background:var(--navy);color:#fff;padding:56px 0}
+.hero-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
+.hero-text h1{font-family:Montserrat,Inter,Arial,Helvetica,sans-serif;font-size:40px;line-height:1.1;margin:0 0 10px}
+.hero-text p{margin:0 0 18px;font-size:18px;color:#eaf1ff}
+.cta-row{display:flex;gap:12px;margin:18px 0 8px}
+.hours{font-size:14px;opacity:.95}
+.hero-logo{width:100%;max-width:520px;filter:drop-shadow(0 8px 30px rgba(0,0,0,.35))}
+
+.section{padding:56px 0;background:#fff}
+.section.alt{background:#f3f6fb}
+.section h2{font-family:Montserrat,Inter,Arial,Helvetica,sans-serif;font-size:28px;margin:0 0 8px}
+.section .sub{color:#525f75;margin:0 0 22px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:18px;box-shadow:0 2px 6px rgba(10,20,40,.04)}
+.card h3{margin:0 0 6px;font-size:18px}
+
+.reviews-grid .review .stars{color:#ffb400;font-size:18px;margin-bottom:6px}
+.reviewer{color:#647089;font-size:14px;margin-top:6px}
+
+.contact{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.contact-card,.map-card{background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:18px}
+.form .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form input,.form textarea{
+  width:100%;padding:12px 14px;border:1px solid #d5dbe6;border-radius:10px;font:inherit
+}
+.form button{margin-top:10px}
+.form-note{display:block;margin-top:8px;color:#69758c;font-size:12px}
+
+.site-footer{background:#0b1220;color:#c9d1e2;padding:20px 0}
+.footer-inner{display:flex;align-items:center;justify-content:space-between}
+.tagline{opacity:.85}
+
+.center{text-align:center}
+
+@media (max-width:900px){
+  .hero-inner{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr 1fr}
+  .contact{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  .grid{grid-template-columns:1fr}
+  .hero-text h1{font-size:32px}
+}
