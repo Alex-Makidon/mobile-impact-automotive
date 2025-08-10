@@ -76,8 +76,11 @@ body{
 
 .center{text-align:center}
 
-.logo { height: 44px; }@media (max-width:900px){
-  .hero-inner{grid-template-columns:1fr}
+.logo {
+  height: 70px;   /* adjust as needed */
+  width: auto;    /* keeps proportions */
+}
+.hero-inner{grid-template-columns:1fr}
   .grid{grid-template-columns:1fr 1fr}
   .contact{grid-template-columns:1fr}
 }
