@@ -256,3 +256,64 @@ img,iframe{max-width:100%}
 .site-footer{background:#0b1220;color:#c9d1e2;padding:20px 0}
 .footer-inner{display:flex;align-items:center;justify-content:space-between}
 .tagline{opacity:.85}
+
+/* ===== Tire smoke + skid (timed with car-drive-in) ===== */
+.hero-art { position: relative; }
+
+/* Position this where the rear wheel would be (tweak as needed) */
+.tire-smoke{
+  position:absolute;
+  left: 8px;     /* move left/right to line up with wheel */
+  bottom: 10px;  /* move up/down to sit on the “ground” */
+  width: 1px; height: 1px; /* anchor point */
+  pointer-events:none; z-index:0;
+}
+
+/* Three small puffs that expand + drift */
+.tire-smoke i{
+  position:absolute; left:0; bottom:0;
+  width:14px; height:10px; border-radius:50%;
+  background: radial-gradient(closest-side, rgba(220,225,233,.85), rgba(220,225,233,0) 70%);
+  opacity:0; filter: blur(0.8px);
+  transform: translate(-6px, 2px) scale(.6);
+}
+
+/* Staggered timings to feel natural (aligned to the car animation start) */
+.page-loaded .tire-smoke i:nth-child(1){ animation: tire-smoke 0.9s ease-out .18s both; }
+.page-loaded .tire-smoke i:nth-child(2){ animation: tire-smoke 1.0s ease-out .28s both; }
+.page-loaded .tire-smoke i:nth-child(3){ animation: tire-smoke 1.1s ease-out .38s both; }
+
+@keyframes tire-smoke{
+  0%   { opacity:0; transform: translate(-6px, 2px)  scale(.6); }
+  25%  { opacity:.55; }
+  100% { opacity:0; transform: translate(-36px, -6px) scale(1.4); }
+}
+
+/* A quick skid shadow that appears as the car stops */
+.skid{
+  position:absolute;
+  left: 16px;  /* align under rear wheel; tweak as needed */
+  bottom: 6px;
+  height: 2px; width: 0;
+  background: linear-gradient(90deg, rgba(20,26,38,.35), rgba(20,26,38,0));
+  border-radius: 2px;
+  opacity: 0;
+  filter: blur(0.6px);
+  pointer-events:none;
+}
+
+/* Stretch out and fade as the car “parks” */
+.page-loaded .skid{
+  animation: skid-line 0.6s cubic-bezier(.22,.9,.26,1) .55s both;
+}
+
+@keyframes skid-line{
+  0%   { width: 0;   opacity: 0; transform: translateX(0); }
+  40%  { width: 90px; opacity: .65; transform: translateX(4px); }
+  100% { width:120px; opacity: 0;  transform: translateX(8px); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .tire-smoke i, .skid { animation: none !important; opacity: 0 !important; }
+}
