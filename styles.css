@@ -77,7 +77,7 @@ body{
 .center{text-align:center}
 
 .logo {
-  height: 70px;   /* adjust as needed */
+  height: 150px;   /* adjust as needed */
   width: auto;    /* keeps proportions */
 }
 .hero-inner{grid-template-columns:1fr}
