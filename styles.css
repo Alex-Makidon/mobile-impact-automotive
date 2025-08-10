@@ -1,4 +1,4 @@
-/* Mobile Impact Automotive - minimal, clean styles */
+/* Mobile Impact Automotive - clean, readable, responsive */
 :root{
   --navy:#0b2a56;
   --navy-ink:#0a2247;
@@ -29,13 +29,13 @@ body{
 }
 .header-inner{
   display:flex;align-items:center;justify-content:space-between;
-  padding:12px 0; min-height:72px;
+  padding:12px 0;min-height:72px;
 }
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
-/* Only size the logo inside the header so the hero can be larger */
-.site-header .logo{height:60px;width:auto;display:block}
+.header-logo{height:60px;width:auto;display:block}
 
-.nav a{color:#fff;text-decoration:none;margin-left:18px;font-weight:600;opacity:.9}
+.nav{display:flex;align-items:center;gap:18px}
+.nav a{color:#fff;text-decoration:none;font-weight:600;opacity:.9}
 .nav a:hover{opacity:1}
 .btn{
   display:inline-block;border-radius:10px;padding:12px 18px;
@@ -49,12 +49,19 @@ body{
 .hero{background:var(--navy);color:#fff;padding:56px 0}
 .hero-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
 .hero-text h1{font-family:Montserrat,Inter,Arial,Helvetica,sans-serif;font-size:40px;line-height:1.1;margin:0 0 10px}
-/* Improve readability on navy */
+/* Improve text contrast on navy */
 .hero-text p, .hero .hours, .hero .hours a{color:#eaf1ff}
 .cta-row{display:flex;gap:12px;margin:18px 0 8px}
 .hours{font-size:14px;opacity:.95}
-/* Big logo in hero area */
-.hero-logo{width:100%;max-width:620px;filter:drop-shadow(0 8px 30px rgba(0,0,0,.35));display:block}
+
+/* Big logo in hero */
+.hero-logo{
+  width:100%;
+  max-width:760px;          /* adjust to taste */
+  display:block;
+  margin:0 auto;
+  filter:drop-shadow(0 8px 30px rgba(0,0,0,.35));
+}
 
 /* SECTIONS */
 .section{padding:56px 0;background:#fff}
@@ -69,7 +76,7 @@ body{
 .reviews-grid .review .stars{color:#ffb400;font-size:18px;margin-bottom:6px}
 .reviewer{color:#647089;font-size:14px;margin-top:6px}
 
-/* CONTACT / MAP */
+/* CONTACT */
 .contact{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .contact-card,.map-card{background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:18px}
 .form .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -90,63 +97,11 @@ body{
   .hero-inner{grid-template-columns:1fr}
   .grid{grid-template-columns:1fr 1fr}
   .contact{grid-template-columns:1fr}
-  .site-header .logo{height:52px}
+  .header-logo{height:52px}
+  .hero-logo{max-width:520px}
 }
 @media (max-width:600px){
   .grid{grid-template-columns:1fr}
   .hero-text h1{font-size:32px}
-  .site-header .logo{height:46px}
-}
-
-/* Header logo size (scoped so the header doesn't stretch) */
-.site-header .header-logo { height: 60px; width: auto; display: block; }
-
-/* Header link colors */
-.nav a:not(.btn) { color: #fff; }                 /* regular links stay white */
-.nav .btn-primary { background: #fff; color: var(--navy) !important; }
-
-/* Improve hero text contrast */
-.hero .hours, .hero .hours a, .hero p { color: #eaf1ff !important; }
-
-/* Responsive tweaks */
-@media (max-width: 900px){
-  .site-header .header-logo { height: 52px; }
-}
-@media (max-width: 600px){
-  .site-header .header-logo { height: 46px; }
-}
-
-/* Header logo size (scoped so the header doesn't stretch) */
-.site-header .header-logo { height: 60px; width: auto; display: block; }
-
-/* Header link colors */
-.nav a:not(.btn) { color: #fff; }                 /* regular links stay white */
-.nav .btn-primary { background: #fff; color: var(--navy) !important; }
-
-/* Improve hero text contrast */
-.hero .hours, .hero .hours a, .hero p { color: #eaf1ff !important; }
-
-/* Responsive tweaks */
-@media (max-width: 900px){
-  .site-header .header-logo { height: 52px; }
-}
-@media (max-width: 600px){
-  .site-header .header-logo { height: 46px; }
-}/* Header logo - stays small */
-.header-logo {
-  height: 44px;   /* small size for menu */
-  width: auto;
-}
-
-/* Hero logo - large and centered */
-.hero-logo {
-  width: 100%;
-  max-width: 700px;
-  display: block;
-  filter: drop-shadow(0 8px 30px rgba(0,0,0,.35));
-  margin: 0 auto;
-}@media (min-width: 1024px) {
-  .hero-logo {
-    max-width: 800px;
-  }
+  .header-logo{height:46px}
 }
