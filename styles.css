@@ -149,3 +149,16 @@ body {
   border-radius: 10px;
 }
 .site-header .btn-primary:hover { background: #fff; color: #0b2a56; }
+/* Larger header logo on desktop */
+@media (min-width: 901px) {
+  .header-logo {
+    max-height: 90px; /* was 80px */
+  }
+}
+
+/* Keep mobile size unchanged */
+@media (max-width: 900px) {
+  .header-logo {
+    max-height: 60px; /* as it currently looks perfect */
+  }
+}
