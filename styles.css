@@ -74,7 +74,7 @@ body{
 .cta-row{display:flex;gap:12px;margin:18px 0 8px}
 .hours{font-size:14px;opacity:.95}
 
-/* Big logo in hero */
+/* Big logo in hero image */
 .hero-logo{
   width:100%;max-width:760px;display:block;margin:0 auto;
   filter:drop-shadow(0 8px 30px rgba(0,0,0,.35));
@@ -90,34 +90,41 @@ body{
 @media (max-width:900px){ .hero-logo{max-width:520px} }
 @media (max-width:600px){ .hero-text h1{font-size:32px} }
 
-/* Drive-in car animation */
-.car-drive{transform:translateX(-120vw) rotate(0deg);will-change:transform,filter;position:relative;z-index:1}
+/* ===== Car drive-in (the car + effects move together) ===== */
+.hero-art{ position:relative; overflow:visible; }
+.car-drive{
+  display:inline-block;
+  position:relative;            /* effects position relative to the car */
+  transform:translateX(-120vw);
+  will-change:transform,filter;
+  z-index:1;
+}
 .page-loaded .car-drive{
   animation:car-drive-in 1.4s cubic-bezier(.22,.9,.26,1) .15s both;
   filter:drop-shadow(0 8px 30px rgba(0,0,0,.35));
 }
 @keyframes car-drive-in{
-  0%{transform:translateX(-120vw) rotate(.6deg)}
-  70%{transform:translateX(8px) rotate(0)}
-  85%{transform:translateX(-4px) rotate(-.2deg)}
+  0%  {transform:translateX(-120vw) rotate(.6deg)}
+  70% {transform:translateX(8px) rotate(0)}
+  85% {transform:translateX(-4px) rotate(-.2deg)}
   100%{transform:translateX(0) rotate(0)}
 }
 
-/* Exhaust puffs */
-.hero-art{position:relative}
+/* ===== Exhaust, tire smoke, skid (attached to car) ===== */
 .exhaust{
-  position:absolute;left:-18px;bottom:18px;width:14px;height:14px;border-radius:50%;
+  position:absolute; left:-10px; bottom:34px;   /* near tailpipe */
+  width:18px; height:18px; border-radius:50%;
   background:radial-gradient(closest-side,rgba(255,255,255,.9),rgba(255,255,255,0) 70%);
-  opacity:0;filter:blur(.5px);z-index:0;
-}
-.exhaust::before,.exhaust::after{
-  content:"";position:absolute;inset:0;border-radius:50%;
-  background:radial-gradient(closest-side,rgba(255,255,255,.9),rgba(255,255,255,0) 70%);
-  opacity:0;filter:blur(.5px);
+  opacity:0; filter:blur(.6px); z-index:0;
 }
 .page-loaded .exhaust{animation:exhaust1 1.3s ease-out .22s both}
+.exhaust::before,.exhaust::after{
+  content:""; position:absolute; inset:0; border-radius:50%;
+  background:inherit; opacity:0; filter:blur(.6px);
+}
 .page-loaded .exhaust::before{animation:exhaust2 1.4s ease-out .34s both}
-.page-loaded .exhaust::after{animation:exhaust3 1.5s ease-out .46s both}
+.page-loaded .exhaust::after {animation:exhaust3 1.5s ease-out .46s both}
+
 @keyframes exhaust1{
   0%{transform:translate(-6px,8px) scale(.6);opacity:0}
   25%{opacity:.55}
@@ -134,14 +141,56 @@ body{
   100%{transform:translate(-68px,-14px) scale(1.9);opacity:0}
 }
 
-/* Respect user preference: reduced motion */
-@media (prefers-reduced-motion:reduce){
-  .car-drive,.page-loaded .car-drive,.page-loaded .hero-text>*,
-  .exhaust,.exhaust::before,.exhaust::after{animation:none!important;transform:none!important;opacity:1}
+/* Tire smoke (larger + higher so it’s visible) */
+.tire-smoke{
+  position:absolute; left:12px; bottom:32px;    /* near rear wheel */
+  pointer-events:none; z-index:0;
+}
+.tire-smoke i{
+  width:42px; height:30px; border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0) 70%);
+  opacity:0; filter:blur(1.6px);
+}
+.page-loaded .tire-smoke i:nth-child(1){animation:tire-smoke 0.9s ease-out .18s both}
+.page-loaded .tire-smoke i:nth-child(2){animation:tire-smoke 1.0s ease-out .28s both}
+.page-loaded .tire-smoke i:nth-child(3){animation:tire-smoke 1.1s ease-out .38s both}
+@keyframes tire-smoke{
+  0%   {opacity:0; transform:translate(-8px, 4px) scale(.7)}
+  25%  {opacity:.6}
+  100% {opacity:0; transform:translate(-44px,-10px) scale(1.5)}
 }
 
+/* Skid shadow */
+.skid{
+  position:absolute; left:28px; bottom:20px;
+  height:2px; width:0;
+  background:linear-gradient(90deg,rgba(20,26,38,.35),rgba(20,26,38,0));
+  border-radius:2px; opacity:0; filter:blur(.6px);
+  pointer-events:none;
+}
+.page-loaded .skid{animation:skid-line .6s cubic-bezier(.22,.9,.26,1) .55s both}
+@keyframes skid-line{
+  0%   {width:0;   opacity:0; transform:translateX(0)}
+  40%  {width:110px; opacity:.65; transform:translateX(6px)}
+  100% {width:140px; opacity:0;  transform:translateX(10px)}
+}
+
+/* Respect user preference: reduced motion */
+@media (prefers-reduced-motion:reduce){
+  .car-drive,.page-loaded .car-drive,
+  .exhaust,.tire-smoke i,.skid{animation:none!important;transform:none!important;opacity:1}
+}
+
+/* Optional: subtle text fade-in after car parks */
+.page-loaded .hero-text > * { animation: hero-fade-up .6s ease both; }
+.page-loaded .hero-text > *:nth-child(1){ animation-delay: .25s; }
+.page-loaded .hero-text > *:nth-child(2){ animation-delay: .35s; }
+.page-loaded .hero-text > *:nth-child(3){ animation-delay: .45s; }
+.page-loaded .hero-text > *:nth-child(4){ animation-delay: .55s; }
+@keyframes hero-fade-up{ from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
 /* =============== */
-/*    Sections     */
+/*     Sections    */
 /* =============== */
 .section{padding:56px 0;background:#fff}
 .section.alt{background:#f3f6fb}
@@ -256,64 +305,3 @@ img,iframe{max-width:100%}
 .site-footer{background:#0b1220;color:#c9d1e2;padding:20px 0}
 .footer-inner{display:flex;align-items:center;justify-content:space-between}
 .tagline{opacity:.85}
-
-/* ===== Tire smoke + skid (timed with car-drive-in) ===== */
-.hero-art { position: relative; }
-
-/* Position this where the rear wheel would be (tweak as needed) */
-.tire-smoke{
-  position:absolute;
-  left: 8px;     /* move left/right to line up with wheel */
-  bottom: 10px;  /* move up/down to sit on the “ground” */
-  width: 1px; height: 1px; /* anchor point */
-  pointer-events:none; z-index:0;
-}
-
-/* Three small puffs that expand + drift */
-.tire-smoke i{
-  position:absolute; left:0; bottom:0;
-  width:14px; height:10px; border-radius:50%;
-  background: radial-gradient(closest-side, rgba(220,225,233,.85), rgba(220,225,233,0) 70%);
-  opacity:0; filter: blur(0.8px);
-  transform: translate(-6px, 2px) scale(.6);
-}
-
-/* Staggered timings to feel natural (aligned to the car animation start) */
-.page-loaded .tire-smoke i:nth-child(1){ animation: tire-smoke 0.9s ease-out .18s both; }
-.page-loaded .tire-smoke i:nth-child(2){ animation: tire-smoke 1.0s ease-out .28s both; }
-.page-loaded .tire-smoke i:nth-child(3){ animation: tire-smoke 1.1s ease-out .38s both; }
-
-@keyframes tire-smoke{
-  0%   { opacity:0; transform: translate(-6px, 2px)  scale(.6); }
-  25%  { opacity:.55; }
-  100% { opacity:0; transform: translate(-36px, -6px) scale(1.4); }
-}
-
-/* A quick skid shadow that appears as the car stops */
-.skid{
-  position:absolute;
-  left: 16px;  /* align under rear wheel; tweak as needed */
-  bottom: 6px;
-  height: 2px; width: 0;
-  background: linear-gradient(90deg, rgba(20,26,38,.35), rgba(20,26,38,0));
-  border-radius: 2px;
-  opacity: 0;
-  filter: blur(0.6px);
-  pointer-events:none;
-}
-
-/* Stretch out and fade as the car “parks” */
-.page-loaded .skid{
-  animation: skid-line 0.6s cubic-bezier(.22,.9,.26,1) .55s both;
-}
-
-@keyframes skid-line{
-  0%   { width: 0;   opacity: 0; transform: translateX(0); }
-  40%  { width: 90px; opacity: .65; transform: translateX(4px); }
-  100% { width:120px; opacity: 0;  transform: translateX(8px); }
-}
-
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce){
-  .tire-smoke i, .skid { animation: none !important; opacity: 0 !important; }
-}
