@@ -167,3 +167,22 @@ img, iframe { max-width: 100%; }          /* never overflow */
   opacity: 1;
   position: relative;
 }
+/* Mobile hero layout swap */
+@media (max-width: 768px) {
+  .hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero-art {
+    order: -1; /* moves logo above text */
+    margin-bottom: 20px;
+  }
+
+  .hero-text {
+    order: 1;
+  }
+}
+
