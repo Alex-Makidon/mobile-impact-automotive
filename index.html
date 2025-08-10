@@ -140,6 +140,40 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
+    <script>
+    // Simple review rotator
+    const reviews = [
+      {
+        text: "They diagnosed my issue quickly and got me back on the road the same day. Great communication and fair pricing.",
+        author: "— Google reviewer"
+      },
+      {
+        text: "Excellent service, very knowledgeable and honest. I won’t take my car anywhere else.",
+        author: "— Google reviewer"
+      },
+      {
+        text: "Fast, professional, and affordable. Highly recommended!",
+        author: "— Google reviewer"
+      }
+    ];
+
+    let current = 0;
+    const reviewText = document.getElementById("review-text");
+    const reviewAuthor = document.getElementById("review-author");
+
+    function showReview(index) {
+      reviewText.textContent = reviews[index].text;
+      reviewAuthor.textContent = reviews[index].author;
+    }
+
+    setInterval(() => {
+      current = (current + 1) % reviews.length;
+      showReview(current);
+    }, 4000); // change every 4 seconds
+
+    // Show first review on load
+    showReview(current);
+  </script>
 </body>
 </html>
 <!-- Open Graph / iMessage Preview -->
