@@ -127,3 +127,25 @@ body{
   height: auto;
   width: auto;
 }
+/* --- Mobile width fixes for Contact & Map --- */
+.container { width: 100%; }               /* be explicit */
+img, iframe { max-width: 100%; }          /* never overflow */
+
+.contact-card, .map-card { overflow: hidden; }  /* clamp children */
+
+/* Stack the two inputs on small screens to avoid overflow */
+@media (max-width: 600px){
+  .form .row { grid-template-columns: 1fr; }  /* was 1fr 1fr */
+  .container { padding: 0 16px; }             /* a touch tighter on small phones */
+  .map-card { height: 320px; }                /* set a sane mobile height */
+}
+
+/* Tablet: single-column layout already, but give map a height */
+@media (max-width: 900px){
+  .map-card { height: 380px; }
+}
+
+/* Desktop map height */
+@media (min-width: 901px){
+  .map-card { height: 420px; }
+}
