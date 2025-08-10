@@ -105,3 +105,19 @@ body{
   .hero-text h1{font-size:32px}
   .header-logo{height:46px}
 }
+/* Call Now button in header */
+.site-header .btn-primary {
+  background-color: #ffffff00; /* transparent background */
+  color: white;
+  border: 2px solid white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.site-header .btn-primary:hover {
+  background-color: white;
+  color: #0d2d57; /* your dark blue */
+}
