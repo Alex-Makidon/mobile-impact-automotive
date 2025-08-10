@@ -305,3 +305,38 @@ img,iframe{max-width:100%}
 .site-footer{background:#0b1220;color:#c9d1e2;padding:20px 0}
 .footer-inner{display:flex;align-items:center;justify-content:space-between}
 .tagline{opacity:.85}
+
+/* --- Kill horizontal scroll caused by off-screen animation (iOS) --- */
+html, body { overflow-x: hidden; }
+.hero { overflow: hidden; } /* optional, just in case */
+
+/* --- Mobile tuning: header + nav spacing so the logo can be larger --- */
+@media (max-width: 600px){
+  .header-logo { height: 60px; }              /* was 50px */
+  .nav a { font-size: 15px; }                 /* slightly smaller labels */
+  .site-header .btn-primary { padding: 8px 14px; }
+}
+
+/* --- Mobile offsets for smoke/exhaust/skid (logo is smaller on phones) --- */
+@media (max-width: 600px){
+  /* all effects are children of .car-drive */
+  .exhaust {
+    left: -8px;     /* closer to tail */
+    bottom: 24px;   /* raise it */
+    width: 14px; height: 14px;
+  }
+
+  .tire-smoke {
+    left: 10px;     /* align with rear wheel */
+    bottom: 24px;   /* raise it */
+  }
+  .tire-smoke i {
+    width: 28px; height: 20px;     /* smaller puffs for smaller logo */
+    filter: blur(1.2px);
+  }
+
+  .skid {
+    left: 18px;
+    bottom: 14px;
+  }
+}
