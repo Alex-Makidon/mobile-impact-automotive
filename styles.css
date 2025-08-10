@@ -97,3 +97,21 @@ body{
   .hero-text h1{font-size:32px}
   .site-header .logo{height:46px}
 }
+
+/* Header logo size (scoped so the header doesn't stretch) */
+.site-header .header-logo { height: 60px; width: auto; display: block; }
+
+/* Header link colors */
+.nav a:not(.btn) { color: #fff; }                 /* regular links stay white */
+.nav .btn-primary { background: #fff; color: var(--navy) !important; }
+
+/* Improve hero text contrast */
+.hero .hours, .hero .hours a, .hero p { color: #eaf1ff !important; }
+
+/* Responsive tweaks */
+@media (max-width: 900px){
+  .site-header .header-logo { height: 52px; }
+}
+@media (max-width: 600px){
+  .site-header .header-logo { height: 46px; }
+}
