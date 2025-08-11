@@ -262,3 +262,10 @@ img,iframe{max-width:100%}
 .site-footer{background:#0b1220;color:#c9d1e2;padding:20px 0}
 .footer-inner{display:flex;align-items:center;justify-content:space-between}
 .tagline{opacity:.85}
+
+/* --- Safeguard: keep header + hero navy --- */
+header.site-header { background: var(--navy) !important; }
+section.hero       { background: var(--navy) !important; }
+
+/* Make sure no accidental opacity dimmed them */
+header.site-header, section.hero { opacity: 1 !important; }
