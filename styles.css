@@ -1,4 +1,4 @@
-/* =============== */
+* =============== */
 /*  Theme Tokens   */
 /* =============== */
 :root{
@@ -16,6 +16,7 @@
 /* =============== */
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
+html,body{overflow-x:hidden}     /* prevent tiny right gap on iOS */
 body{
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   color:var(--text);
@@ -29,8 +30,7 @@ body{
 /* =============== */
 .site-header{
   position:sticky;top:0;z-index:10;
-  background:var(--navy);
-  color:var(--white);
+  background:var(--navy);color:var(--white);
   border-bottom:1px solid rgba(255,255,255,.08);
 }
 .header-inner{
@@ -38,11 +38,9 @@ body{
   padding:12px 0;min-height:72px;
 }
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
-
-/* Header logo sizes (desktop bigger, mobile smaller) */
 .header-logo{height:70px;width:auto;display:block}
 @media (max-width:900px){ .header-logo{height:60px} }
-@media (max-width:600px){ .header-logo{height:50px} }
+@media (max-width:600px){ .header-logo{height:60px} } /* bigger on mobile for presence */
 
 .nav{display:flex;align-items:center;gap:18px}
 .nav a{color:#fff;text-decoration:none;font-weight:600;opacity:.9}
@@ -54,196 +52,136 @@ body{
 .btn-primary{background:#fff;color:var(--navy)}
 .btn-outline{border-color:#fff;color:#fff}
 .btn-outline:hover{background:#fff;color:var(--navy)}
-
-/* Keep header “Call Now” styled as outline */
-.site-header .btn-primary{
-  background:transparent;color:#fff;border:2px solid #fff;border-radius:10px;
-}
+.site-header .btn-primary{background:transparent;color:#fff;border:2px solid #fff;border-radius:10px}
 .site-header .btn-primary:hover{background:#fff;color:var(--navy)}
+
+@media (max-width:600px){
+  .nav a{font-size:15px}
+  .site-header .btn-primary{padding:8px 14px}
+}
 
 /* =============== */
 /*      Hero       */
 /* =============== */
-.hero{background:var(--navy);color:#fff;padding:56px 0}
+.hero{background:var(--navy);color:#fff;padding:56px 0;overflow:hidden}
 .hero-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
-.hero-text h1{
-  font-family:Montserrat,Inter,Arial,Helvetica,sans-serif;
-  font-size:40px;line-height:1.1;margin:0 0 10px
-}
-.hero-text p,.hero .hours,.hero .hours a{color:#eaf1ff}
-.cta-row{display:flex;gap:12px;margin:18px 0 8px}
-.hours{font-size:14px;opacity:.95}
-
-/* Big logo in hero image */
-.hero-logo{
-  width:100%;max-width:760px;display:block;margin:0 auto;
-  filter:drop-shadow(0 8px 30px rgba(0,0,0,.35));
-}
-
-/* Mobile hero: put logo above text */
 @media (max-width:900px){ .hero-inner{grid-template-columns:1fr} }
 @media (max-width:768px){
   .hero-inner{display:flex;flex-direction:column;align-items:center;text-align:center}
   .hero-art{order:-1;margin-bottom:20px}
   .hero-text{order:1}
 }
-@media (max-width:900px){ .hero-logo{max-width:520px} }
+.hero-text h1{font-family:Montserrat,Inter,Arial,Helvetica,sans-serif;font-size:40px;line-height:1.1;margin:0 0 10px}
 @media (max-width:600px){ .hero-text h1{font-size:32px} }
+.hero-text p,.hero .hours,.hero .hours a{color:#eaf1ff}
+.cta-row{display:flex;gap:12px;margin:18px 0 8px}
+.hours{font-size:14px;opacity:.95}
+.hero-logo{width:100%;max-width:760px;display:block;margin:0 auto;filter:drop-shadow(0 8px 30px rgba(0,0,0,.35))}
+@media (max-width:900px){ .hero-logo{max-width:520px} }
 
-/* ===== Car drive-in (the car + effects move together) ===== */
-.hero-art{ position:relative; overflow:visible; }
+/* Car + effects move together */
+.hero-art{position:relative;overflow:visible}
 .car-drive{
-  display:inline-block;
-  position:relative;            /* effects position relative to the car */
-  transform:translateX(-120vw);
-  will-change:transform,filter;
-  z-index:1;
+  position:relative;display:inline-block;z-index:1;
+  transform:translateX(-120vw);will-change:transform,filter;
 }
-.page-loaded .car-drive{
-  animation:car-drive-in 1.4s cubic-bezier(.22,.9,.26,1) .15s both;
-  filter:drop-shadow(0 8px 30px rgba(0,0,0,.35));
-}
+.page-loaded .car-drive{animation:car-drive-in 1.4s cubic-bezier(.22,.9,.26,1) .15s both;filter:drop-shadow(0 8px 30px rgba(0,0,0,.35))}
+.car-drive .hero-logo{position:relative;z-index:2}
 @keyframes car-drive-in{
-  0%  {transform:translateX(-120vw) rotate(.6deg)}
-  70% {transform:translateX(8px) rotate(0)}
-  85% {transform:translateX(-4px) rotate(-.2deg)}
+  0%{transform:translateX(-120vw) rotate(.6deg)}
+  70%{transform:translateX(8px) rotate(0)}
+  85%{transform:translateX(-4px) rotate(-.2deg)}
   100%{transform:translateX(0) rotate(0)}
 }
 
-/* ===== Exhaust, tire smoke, skid (attached to car) ===== */
+/* Exhaust near tailpipe (scaled) */
 .exhaust{
-  position:absolute; left:-10px; bottom:34px;   /* near tailpipe */
-  width:18px; height:18px; border-radius:50%;
-  background:radial-gradient(closest-side,rgba(255,255,255,.9),rgba(255,255,255,0) 70%);
-  opacity:0; filter:blur(.6px); z-index:0;
-}
-.page-loaded .exhaust{animation:exhaust1 1.3s ease-out .22s both}
-.exhaust::before,.exhaust::after{
-  content:""; position:absolute; inset:0; border-radius:50%;
-  background:inherit; opacity:0; filter:blur(.6px);
-}
-.page-loaded .exhaust::before{animation:exhaust2 1.4s ease-out .34s both}
-.page-loaded .exhaust::after {animation:exhaust3 1.5s ease-out .46s both}
-
-@keyframes exhaust1{
-  0%{transform:translate(-6px,8px) scale(.6);opacity:0}
-  25%{opacity:.55}
-  100%{transform:translate(-48px,-6px) scale(1.5);opacity:0}
-}
-@keyframes exhaust2{
-  0%{transform:translate(-4px,10px) scale(.5);opacity:0}
-  30%{opacity:.5}
-  100%{transform:translate(-58px,-10px) scale(1.7);opacity:0}
-}
-@keyframes exhaust3{
-  0%{transform:translate(-2px,12px) scale(.45);opacity:0}
-  35%{opacity:.45}
-  100%{transform:translate(-68px,-14px) scale(1.9);opacity:0}
-}
-
-/* Car image should be above smoke */
-.car-drive { position: relative; display: inline-block; }
-.car-drive .hero-logo { position: relative; z-index: 2; }
-
-/* --- Exhaust puffs near tailpipe --- */
-.exhaust{
-  position:absolute;
-  left: clamp(-14px, -1.2vw, -6px);
-  bottom: clamp(28px, 3.8vw, 48px);
-  width: clamp(16px, 2.2vw, 24px);
-  height: clamp(16px, 2.2vw, 24px);
+  position:absolute;z-index:0;
+  left:clamp(-14px,-1.2vw,-6px);
+  bottom:clamp(28px,3.8vw,48px);
+  width:clamp(16px,2.2vw,24px);
+  height:clamp(16px,2.2vw,24px);
   border-radius:50%;
   background:radial-gradient(closest-side,rgba(255,255,255,.9),rgba(255,255,255,0) 70%);
-  opacity:0; filter:blur(.6px); z-index:0;
+  opacity:0;filter:blur(.6px);
 }
 .page-loaded .exhaust{animation:exhaust1 1.3s ease-out .22s both}
-.exhaust::before,.exhaust::after{
-  content:""; position:absolute; inset:0; border-radius:50%;
-  background:inherit; opacity:0; filter:blur(.6px);
-}
+.exhaust::before,.exhaust::after{content:"";position:absolute;inset:0;border-radius:50%;background:inherit;opacity:0;filter:blur(.6px)}
 .page-loaded .exhaust::before{animation:exhaust2 1.4s ease-out .34s both}
-.page-loaded .exhaust::after {animation:exhaust3 1.5s ease-out .46s both}
+.page-loaded .exhaust::after{animation:exhaust3 1.5s ease-out .46s both}
+@keyframes exhaust1{0%{transform:translate(-6px,8px) scale(.6);opacity:0}25%{opacity:.55}100%{transform:translate(-48px,-6px) scale(1.5);opacity:0}}
+@keyframes exhaust2{0%{transform:translate(-4px,10px) scale(.5);opacity:0}30%{opacity:.5}100%{transform:translate(-58px,-10px) scale(1.7);opacity:0}}
+@keyframes exhaust3{0%{transform:translate(-2px,12px) scale(.45);opacity:0}35%{opacity:.45}100%{transform:translate(-68px,-14px) scale(1.9);opacity:0}}
 
-/* --- Tire smoke that scales with screen --- */
-
-}/* --- Tire smoke (higher + larger) --- */
-.tire-smoke{
-  position:absolute;
-  left: clamp(10px, 1.2vw, 24px);            /* align with rear wheel */
-  bottom: clamp(40px, 5vw, 72px);            /* raise it higher */
-  pointer-events:none;
-  z-index:1;
-  display:flex; gap: clamp(4px, .8vw, 12px);
+/* Tire smoke (bigger, higher, longer) */
+.car-drive .tire-smoke{
+  position:absolute;pointer-events:none;z-index:3;
+  left:clamp(14px,1.6vw,28px);
+  bottom:clamp(56px,6.5vw,92px);
+  display:flex;gap:clamp(6px,1vw,14px);
+  will-change:transform,opacity;
 }
-
-.tire-smoke i{
-  width:  clamp(40px, 7vw, 84px);            /* larger puff */
-  height: clamp(30px, 5.5vw, 60px);          /* taller puff */
+.car-drive .tire-smoke i{
+  display:block;
+  width:clamp(56px,9vw,120px);
+  height:clamp(40px,7vw,90px);
   border-radius:50%;
   background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0) 70%);
-  opacity:0; filter:blur(1.6px);
-  animation: tire-smoke 1.0s ease-out both;
+  opacity:0;filter:blur(2px);
+  animation:tire-smoke-puff 2.2s ease-out both;
+  will-change:transform,opacity;
 }
-
-.page-loaded .tire-smoke i:nth-child(1){ animation-delay: .18s; }
-.page-loaded .tire-smoke i:nth-child(2){ animation-delay: .28s; }
-.page-loaded .tire-smoke i:nth-child(3){ animation-delay: .38s; }
-
-@keyframes tire-smoke{
-  0%   { opacity:0; transform: translate(-8px, 4px) scale(.9); }
-  25%  { opacity:.65; }
-  100% { opacity:0; transform: translate(-54px, -18px) scale(1.7); }
-}
-/* Skid shadow under rear wheel */
-.skid{
-  position:absolute;
-  left: clamp(24px, 2vw, 32px);
-  bottom: clamp(18px, 2.6vw, 26px);
-  height:2px; width:0;
-  background:linear-gradient(90deg,rgba(20,26,38,.35),rgba(20,26,38,0));
-  border-radius:2px; opacity:0; filter:blur(.6px);
-  pointer-events:none; z-index:0;
-}
-.page-loaded .skid{animation:skid-line .6s cubic-bezier(.22,.9,.26,1) .55s both}
-@keyframes skid-line{
-  0%   {width:0; opacity:0; transform:translateX(0)}
-  40%  {width: clamp(80px, 10vw, 140px); opacity:.65; transform:translateX(6px)}
-  100% {width: clamp(90px, 12vw, 160px); opacity:0;  transform:translateX(10px)}
-}
-
-/* Respect reduced motion */
-@media (prefers-reduced-motion:reduce){
-  .exhaust,.tire-smoke i,.skid{animation:none!important;transform:none!important;opacity:1}
+.page-loaded .tire-smoke i:nth-child(1){animation-delay:.18s}
+.page-loaded .tire-smoke i:nth-child(2){animation-delay:.58s}
+.page-loaded .tire-smoke i:nth-child(3){animation-delay:.98s}
+@keyframes tire-smoke-puff{
+  0%{opacity:.85;transform:translate(-8px,8px) scale(.9)}
+  35%{opacity:.70;transform:translate(-26px,0) scale(1.15)}
+  70%{opacity:.45;transform:translate(-64px,-18px) scale(1.55)}
+  100%{opacity:0;transform:translate(-92px,-32px) scale(1.95)}
 }
 
 /* Skid shadow */
 .skid{
-  position:absolute; left:28px; bottom:20px;
-  height:2px; width:0;
+  position:absolute;z-index:0;
+  left:clamp(28px,2.4vw,40px);
+  bottom:clamp(24px,3vw,34px);
+  height:2px;width:0;border-radius:2px;
   background:linear-gradient(90deg,rgba(20,26,38,.35),rgba(20,26,38,0));
-  border-radius:2px; opacity:0; filter:blur(.6px);
-  pointer-events:none;
+  opacity:0;filter:blur(.6px);pointer-events:none;
 }
-.page-loaded .skid{animation:skid-line .6s cubic-bezier(.22,.9,.26,1) .55s both}
+.page-loaded .skid{animation:skid-line .75s cubic-bezier(.22,.9,.26,1) .55s both}
 @keyframes skid-line{
-  0%   {width:0;   opacity:0; transform:translateX(0)}
-  40%  {width:110px; opacity:.65; transform:translateX(6px)}
-  100% {width:140px; opacity:0;  transform:translateX(10px)}
+  0%{width:0;opacity:0;transform:translateX(0)}
+  45%{width:clamp(110px,14vw,190px);opacity:.65;transform:translateX(6px)}
+  100%{width:clamp(130px,16vw,220px);opacity:0;transform:translateX(12px)}
 }
 
-/* Respect user preference: reduced motion */
+/* Mobile nudge so smoke doesn't fall below car */
+@media (max-width:600px){
+  .car-drive .tire-smoke{
+    bottom:clamp(48px,10vw,80px);
+    left:clamp(10px,3vw,24px);
+  }
+  .car-drive .tire-smoke i{
+    width:clamp(44px,14vw,84px);
+    height:clamp(32px,10vw,60px);
+  }
+}
+
+/* Reduced motion */
 @media (prefers-reduced-motion:reduce){
   .car-drive,.page-loaded .car-drive,
   .exhaust,.tire-smoke i,.skid{animation:none!important;transform:none!important;opacity:1}
 }
 
-/* Optional: subtle text fade-in after car parks */
-.page-loaded .hero-text > * { animation: hero-fade-up .6s ease both; }
-.page-loaded .hero-text > *:nth-child(1){ animation-delay: .25s; }
-.page-loaded .hero-text > *:nth-child(2){ animation-delay: .35s; }
-.page-loaded .hero-text > *:nth-child(3){ animation-delay: .45s; }
-.page-loaded .hero-text > *:nth-child(4){ animation-delay: .55s; }
-@keyframes hero-fade-up{ from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+/* Optional: subtle text fade-in after park */
+.page-loaded .hero-text>*{animation:hero-fade-up .6s ease both}
+.page-loaded .hero-text>*:nth-child(1){animation-delay:.25s}
+.page-loaded .hero-text>*:nth-child(2){animation-delay:.35s}
+.page-loaded .hero-text>*:nth-child(3){animation-delay:.45s}
+.page-loaded .hero-text>*:nth-child(4){animation-delay:.55s}
+@keyframes hero-fade-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* =============== */
 /*     Sections    */
@@ -253,10 +191,9 @@ body{
 .section h2{font-family:Montserrat,Inter,Arial,Helvetica,sans-serif;font-size:28px;margin:0 0 8px}
 .section .sub{color:#525f75;margin:0 0 22px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.card{
-  background:#fff;border:1px solid #e6ecf5;border-radius:14px;
-  padding:18px;box-shadow:0 2px 6px rgba(10,20,40,.04)
-}
+@media (max-width:900px){ .grid{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:600px){ .grid{grid-template-columns:1fr} }
+.card{background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:18px;box-shadow:0 2px 6px rgba(10,20,40,.04)}
 .card h3{margin:0 0 6px;font-size:18px}
 
 /* =============== */
@@ -264,27 +201,17 @@ body{
 /* =============== */
 .reviews-wrapper{display:flex;align-items:center;justify-content:space-between;gap:30px}
 @media (max-width:768px){ .reviews-wrapper{flex-direction:column;text-align:center} }
-
 .reviews-rotator{position:relative;min-height:150px;padding-bottom:36px}
 .review-card{opacity:0;position:absolute;inset:0;transition:opacity .5s ease}
 .review-card.active{opacity:1;position:relative}
-
-.review-dots{
-  display:flex;gap:8px;justify-content:center;
-  position:absolute;left:0;right:0;bottom:0
-}
-.review-dot{
-  width:10px;height:10px;border-radius:50%;
-  background:#c8d2e6;border:none;cursor:pointer
-}
+.review-dots{display:flex;gap:8px;justify-content:center;position:absolute;left:0;right:0;bottom:0}
+.review-dot{width:10px;height:10px;border-radius:50%;background:#c8d2e6;border:none;cursor:pointer}
 .review-dot[aria-selected="true"]{background:#0b2a56;transform:scale(1.1)}
 .review-dot:focus-visible{outline:3px solid #0b2a56;outline-offset:2px;border-radius:999px}
-
-/* Google Review button */
 .google-review-btn{
   background:#fff;color:#4285F4;border:2px solid #4285F4;
-  display:inline-flex;align-items:center;gap:8px;
-  font-weight:600;padding:10px 18px;border-radius:8px;transition:all .3s ease
+  display:inline-flex;align-items:center;gap:8px;font-weight:600;
+  padding:10px 18px;border-radius:8px;transition:all .3s ease
 }
 .google-review-btn:hover{background:#4285F4;color:#fff}
 .google-review-btn:hover .google-icon{filter:brightness(0) invert(1)}
@@ -293,37 +220,20 @@ body{
 /* =============== */
 /*     Gallery     */
 /* =============== */
-.gallery-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:12px
-}
-.gallery-grid .thumb{
-  position:relative;overflow:hidden;border-radius:12px;
-  background:#e9edf5;aspect-ratio:4/3
-}
-.gallery-grid img{
-  width:100%;height:100%;object-fit:cover;display:block;
-  transition:transform .35s ease
-}
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.gallery-grid .thumb{position:relative;overflow:hidden;border-radius:12px;background:#e9edf5;aspect-ratio:4/3}
+.gallery-grid img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease}
 .gallery-grid .thumb:hover img{transform:scale(1.04)}
 @media (max-width:900px){ .gallery-grid{grid-template-columns:repeat(2,1fr)} }
 @media (max-width:600px){ .gallery-grid{grid-template-columns:1fr} }
 
 /* Lightbox */
-.lightbox{
-  position:fixed;inset:0;display:none;place-items:center;
-  background:rgba(0,0,0,.85);z-index:9999;padding:20px
-}
+.lightbox{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.85);z-index:9999;padding:20px}
 .lightbox.open{display:grid}
-.lightbox img{
-  max-width:min(100%,1100px);
-  max-height:calc(100vh - 140px);
-  border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)
-}
+.lightbox img{max-width:min(100%,1100px);max-height:calc(100vh - 140px);border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
 .lightbox button{
-  position:absolute;background:rgba(255,255,255,.12);color:#fff;
-  border:none;width:44px;height:44px;border-radius:50%;
-  display:grid;place-items:center;cursor:pointer;font-size:22px;
-  backdrop-filter:blur(6px)
+  position:absolute;background:rgba(255,255,255,.12);color:#fff;border:none;width:44px;height:44px;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;font-size:22px;backdrop-filter:blur(6px)
 }
 .lightbox-close{top:18px;right:18px;font-size:30px}
 .lightbox-prev{left:18px;top:50%;transform:translateY(-50%)}
@@ -333,26 +243,17 @@ body{
 /*     Contact     */
 /* =============== */
 .contact{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.contact-card,.map-card{
-  background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:18px
-}
+.contact-card,.map-card{background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:18px}
 .form .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.form input,.form textarea{
-  width:100%;padding:12px 14px;border:1px solid #d5dbe6;border-radius:10px;font:inherit
-}
+.form input,.form textarea{width:100%;padding:12px 14px;border:1px solid #d5dbe6;border-radius:10px;font:inherit}
 .form button{margin-top:10px}
 .form-note{display:block;margin-top:8px;color:#69758c;font-size:12px}
 
-/* Mobile width fixes for Contact & Map */
-.container{width:100%}
+/* Contact responsiveness */
 img,iframe{max-width:100%}
 .contact-card,.map-card{overflow:hidden}
 @media (max-width:900px){ .contact{grid-template-columns:1fr} .map-card{height:380px} }
-@media (max-width:600px){
-  .form .row{grid-template-columns:1fr}
-  .container{padding:0 16px}
-  .map-card{height:320px}
-}
+@media (max-width:600px){ .form .row{grid-template-columns:1fr} .container{padding:0 16px} .map-card{height:320px} }
 @media (min-width:901px){ .map-card{height:420px} }
 
 /* =============== */
@@ -361,205 +262,3 @@ img,iframe{max-width:100%}
 .site-footer{background:#0b1220;color:#c9d1e2;padding:20px 0}
 .footer-inner{display:flex;align-items:center;justify-content:space-between}
 .tagline{opacity:.85}
-
-/* --- Kill horizontal scroll caused by off-screen animation (iOS) --- */
-html, body { overflow-x: hidden; }
-.hero { overflow: hidden; } /* optional, just in case */
-
-/* --- Mobile tuning: header + nav spacing so the logo can be larger --- */
-@media (max-width: 600px){
-  .header-logo { height: 60px; }              /* was 50px */
-  .nav a { font-size: 15px; }                 /* slightly smaller labels */
-  .site-header .btn-primary { padding: 8px 14px; }
-}
-
-/* --- Mobile offsets for smoke/exhaust/skid (logo is smaller on phones) --- */
-@media (max-width: 600px){
-  /* all effects are children of .car-drive */
-  .exhaust {
-    left: -8px;     /* closer to tail */
-    bottom: 24px;   /* raise it */
-    width: 14px; height: 14px;
-  }
-
-  .tire-smoke {
-    left: 10px;     /* align with rear wheel */
-    bottom: 24px;   /* raise it */
-  }
-  .tire-smoke i {
-    width: 28px; height: 20px;     /* smaller puffs for smaller logo */
-    filter: blur(1.2px);
-  }
-
-  .skid {
-    left: 18px;
-    bottom: 14px;
-  }
-}
-/* Responsive columns for the generic .grid (Services section) */
-.grid { 
-  display: grid; 
-  grid-template-columns: repeat(3, 1fr); 
-  gap: 16px; 
-}
-
-/* Tablet: 2 columns */
-@media (max-width: 900px){
-  .grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* Phone: 1 column */
-@media (max-width: 600px){
-  .grid { grid-template-columns: 1fr; }
-}
-
-/* Just in case something forced a fixed height somewhere */
-.card { height: auto; }
-/* Ensure effects can overflow the hero and are layered right */
-.hero-art { position: relative; overflow: visible; }
-.car-drive { position: relative; display: inline-block; }
-.car-drive .hero-logo { position: relative; z-index: 2; }
-
-/* BIGGER, HIGHER, LONGER tire smoke */
-.car-drive .tire-smoke{
-  position:absolute;
-  left: clamp(14px, 1.6vw, 28px);      /* nudge toward rear wheel */
-  bottom: clamp(56px, 6.5vw, 92px);    /* much higher so it's clearly visible */
-  display:flex; gap: clamp(6px, 1vw, 14px);
-  pointer-events:none;
-  z-index: 3;                          /* use 1 to put behind the car if you prefer */
-  will-change: transform, opacity;
-}
-
-.car-drive .tire-smoke i{
-  display:block;
-  width:  clamp(56px, 9vw, 120px);     /* bigger puffs */
-  height: clamp(40px, 7vw, 90px);
-  border-radius:50%;
-  background: radial-gradient(closest-side, rgba(255,255,255,.95), rgba(255,255,255,0) 70%);
-  opacity: 0;
-  filter: blur(2px);
-  animation: tire-smoke-puff 2.2s ease-out both;  /* longer life */
-  will-change: transform, opacity;
-}
-
-/* stagger for natural feel */
-.page-loaded .tire-smoke i:nth-child(1){ animation-delay: .18s; }
-.page-loaded .tire-smoke i:nth-child(2){ animation-delay: .58s; }
-.page-loaded .tire-smoke i:nth-child(3){ animation-delay: .98s; }
-
-/* slower, more drift, more scale */
-@keyframes tire-smoke-puff{
-  0%   { opacity:.85; transform: translate(-8px, 8px)  scale(.9); }
-  35%  { opacity:.70; transform: translate(-26px, 0px) scale(1.15); }
-  70%  { opacity:.45; transform: translate(-64px,-18px) scale(1.55); }
-  100% { opacity:0;   transform: translate(-92px,-32px) scale(1.95); }
-}
-
-/* keep the skid aligned a bit higher too */
-.skid{
-  position:absolute;
-  left: clamp(28px, 2.4vw, 40px);
-  bottom: clamp(24px, 3vw, 34px);
-  height:2px; width:0;
-  background:linear-gradient(90deg,rgba(20,26,38,.35),rgba(20,26,38,0));
-  border-radius:2px; opacity:0; filter:blur(.6px);
-  pointer-events:none; z-index:0;
-}
-.page-loaded .skid{ animation: skid-line .75s cubic-bezier(.22,.9,.26,1) .55s both; }
-@keyframes skid-line{
-  0%   { width:0; opacity:0; transform:translateX(0) }
-  45%  { width: clamp(110px, 14vw, 190px); opacity:.65; transform:translateX(6px) }
-  100% { width: clamp(130px, 16vw, 220px); opacity:0;  transform:translateX(12px) }
-}
-
-/* mobile-specific nudge so it doesn't fall below the car */
-@media (max-width: 600px){
-  .car-drive .tire-smoke{
-    bottom: clamp(48px, 10vw, 80px);
-    left: clamp(10px, 3vw, 24px);
-  }
-  .car-drive .tire-smoke i{
-    width:  clamp(44px, 14vw, 84px);
-    height: clamp(32px, 10vw, 60px);
-  }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion:reduce){
-  .car-drive .tire-smoke i, .skid { animation:none !important; opacity:1; transform:none; }
-}
-/* Ensure effects can overflow the hero and are layered right */
-.hero-art { position: relative; overflow: visible; }
-.car-drive { position: relative; display: inline-block; }
-.car-drive .hero-logo { position: relative; z-index: 2; }
-
-/* BIGGER, HIGHER, LONGER tire smoke */
-.car-drive .tire-smoke{
-  position:absolute;
-  left: clamp(14px, 1.6vw, 28px);      /* nudge toward rear wheel */
-  bottom: clamp(56px, 6.5vw, 92px);    /* much higher so it's clearly visible */
-  display:flex; gap: clamp(6px, 1vw, 14px);
-  pointer-events:none;
-  z-index: 3;                          /* use 1 to put behind the car if you prefer */
-  will-change: transform, opacity;
-}
-
-.car-drive .tire-smoke i{
-  display:block;
-  width:  clamp(56px, 9vw, 120px);     /* bigger puffs */
-  height: clamp(40px, 7vw, 90px);
-  border-radius:50%;
-  background: radial-gradient(closest-side, rgba(255,255,255,.95), rgba(255,255,255,0) 70%);
-  opacity: 0;
-  filter: blur(2px);
-  animation: tire-smoke-puff 2.2s ease-out both;  /* longer life */
-  will-change: transform, opacity;
-}
-
-/* stagger for natural feel */
-.page-loaded .tire-smoke i:nth-child(1){ animation-delay: .18s; }
-.page-loaded .tire-smoke i:nth-child(2){ animation-delay: .58s; }
-.page-loaded .tire-smoke i:nth-child(3){ animation-delay: .98s; }
-
-/* slower, more drift, more scale */
-@keyframes tire-smoke-puff{
-  0%   { opacity:.85; transform: translate(-8px, 8px)  scale(.9); }
-  35%  { opacity:.70; transform: translate(-26px, 0px) scale(1.15); }
-  70%  { opacity:.45; transform: translate(-64px,-18px) scale(1.55); }
-  100% { opacity:0;   transform: translate(-92px,-32px) scale(1.95); }
-}
-
-/* keep the skid aligned a bit higher too */
-.skid{
-  position:absolute;
-  left: clamp(28px, 2.4vw, 40px);
-  bottom: clamp(24px, 3vw, 34px);
-  height:2px; width:0;
-  background:linear-gradient(90deg,rgba(20,26,38,.35),rgba(20,26,38,0));
-  border-radius:2px; opacity:0; filter:blur(.6px);
-  pointer-events:none; z-index:0;
-}
-.page-loaded .skid{ animation: skid-line .75s cubic-bezier(.22,.9,.26,1) .55s both; }
-@keyframes skid-line{
-  0%   { width:0; opacity:0; transform:translateX(0) }
-  45%  { width: clamp(110px, 14vw, 190px); opacity:.65; transform:translateX(6px) }
-  100% { width: clamp(130px, 16vw, 220px); opacity:0;  transform:translateX(12px) }
-}
-
-/* mobile-specific nudge so it doesn't fall below the car */
-@media (max-width: 600px){
-  .car-drive .tire-smoke{
-    bottom: clamp(48px, 10vw, 80px);
-    left: clamp(10px, 3vw, 24px);
-  }
-  .car-drive .tire-smoke i{
-    width:  clamp(44px, 14vw, 84px);
-    height: clamp(32px, 10vw, 60px);
-  }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion:reduce){
-  .car-drive .tire-smoke i, .skid { animation:none !important; opacity:1; transform:none; }
-}
