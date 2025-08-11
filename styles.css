@@ -141,59 +141,79 @@ body{
   100%{transform:translate(-68px,-14px) scale(1.9);opacity:0}
 }
 
-/* Tire smoke (larger + higher so it’s visible) */
+/* Car image should be above smoke */
+.car-drive { position: relative; display: inline-block; }
+.car-drive .hero-logo { position: relative; z-index: 2; }
+
+/* --- Exhaust puffs near tailpipe --- */
+.exhaust{
+  position:absolute;
+  left: clamp(-14px, -1.2vw, -6px);
+  bottom: clamp(28px, 3.8vw, 48px);
+  width: clamp(16px, 2.2vw, 24px);
+  height: clamp(16px, 2.2vw, 24px);
+  border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,255,255,.9),rgba(255,255,255,0) 70%);
+  opacity:0; filter:blur(.6px); z-index:0;
+}
+.page-loaded .exhaust{animation:exhaust1 1.3s ease-out .22s both}
+.exhaust::before,.exhaust::after{
+  content:""; position:absolute; inset:0; border-radius:50%;
+  background:inherit; opacity:0; filter:blur(.6px);
+}
+.page-loaded .exhaust::before{animation:exhaust2 1.4s ease-out .34s both}
+.page-loaded .exhaust::after {animation:exhaust3 1.5s ease-out .46s both}
+
+/* --- Tire smoke that scales with screen --- */
 .tire-smoke{
-  position:absolute; left:12px; bottom:32px;    /* near rear wheel */
+  position:absolute;
+  left: clamp(10px, 1.2vw, 24px);            /* align with rear wheel */
+  bottom: clamp(26px, 3.4vw, 46px);          /* raise it */
+  pointer-events:none;
+  z-index:1;                                  /* behind logo, above exhaust if needed */
+  display:flex; gap: clamp(2px, .6vw, 8px);
+}
+
+.tire-smoke i{
+  width:  clamp(28px, 5vw, 56px);
+  height: clamp(20px, 3.6vw, 40px);
+  border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0) 70%);
+  opacity:0; filter:blur(1.4px);
+  animation: tire-smoke 1.0s ease-out both;
+}
+.page-loaded .tire-smoke i:nth-child(1){ animation-delay: .18s; }
+.page-loaded .tire-smoke i:nth-child(2){ animation-delay: .28s; }
+.page-loaded .tire-smoke i:nth-child(3){ animation-delay: .38s; }
+
+@keyframes tire-smoke{
+  0%   { opacity:0; transform: translate(-8px, 4px) scale(.7); }
+  25%  { opacity:.6; }
+  100% { opacity:0; transform: translate(-44px, -12px) scale(1.55); }
+}
+
+/* Skid shadow under rear wheel */
+.skid{
+  position:absolute;
+  left: clamp(24px, 2vw, 32px);
+  bottom: clamp(18px, 2.6vw, 26px);
+  height:2px; width:0;
+  background:linear-gradient(90deg,rgba(20,26,38,.35),rgba(20,26,38,0));
+  border-radius:2px; opacity:0; filter:blur(.6px);
   pointer-events:none; z-index:0;
 }
-.tire-smoke i{
-  width:42px; height:30px; border-radius:50%;
-  background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0) 70%);
-  opacity:0; filter:blur(1.6px);
-}
-.page-loaded .tire-smoke i:nth-child(1){animation:tire-smoke 0.9s ease-out .18s both}
-.page-loaded .tire-smoke i:nth-child(2){animation:tire-smoke 1.0s ease-out .28s both}
-.page-loaded .tire-smoke i:nth-child(3){animation:tire-smoke 1.1s ease-out .38s both}
-@keyframes tire-smoke{
-  0%   {opacity:0; transform:translate(-8px, 4px) scale(.7)}
-  25%  {opacity:.6}
-  100% {opacity:0; transform:translate(-44px,-10px) scale(1.5)}
+.page-loaded .skid{animation:skid-line .6s cubic-bezier(.22,.9,.26,1) .55s both}
+@keyframes skid-line{
+  0%   {width:0; opacity:0; transform:translateX(0)}
+  40%  {width: clamp(80px, 10vw, 140px); opacity:.65; transform:translateX(6px)}
+  100% {width: clamp(90px, 12vw, 160px); opacity:0;  transform:translateX(10px)}
 }
 
-.car-drive {
-  position: relative;
-  display: inline-block;
+/* Respect reduced motion */
+@media (prefers-reduced-motion:reduce){
+  .exhaust,.tire-smoke i,.skid{animation:none!important;transform:none!important;opacity:1}
 }
 
-/* Tire smoke container */
-.tire-smoke {
-  position: absolute;
-  bottom: 15%; /* moves smoke higher — tweak as needed */
-  left: -10%;  /* moves it slightly behind the car */
-  display: flex;
-  gap: 0.3em;
-  z-index: 1; /* keep behind car */
-}
-
-/* Each smoke puff */
-.tire-smoke i {
-  display: block;
-  width: 8%;    /* size relative to car container */
-  height: 8%;
-  background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(200,200,200,0) 70%);
-  border-radius: 50%;
-  animation: puff 1.5s infinite ease-out;
-  opacity: 0.7;
-}
-
-.tire-smoke i:nth-child(2) { animation-delay: 0.3s; }
-.tire-smoke i:nth-child(3) { animation-delay: 0.6s; }
-
-@keyframes puff {
-  0%   { transform: scale(0.5) translateY(0); opacity: 0.8; }
-  50%  { transform: scale(1) translateY(-20%); opacity: 0.4; }
-  100% { transform: scale(1.5) translateY(-40%); opacity: 0; }
-}
 /* Skid shadow */
 .skid{
   position:absolute; left:28px; bottom:20px;
