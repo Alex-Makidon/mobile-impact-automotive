@@ -320,3 +320,51 @@ img,iframe{max-width:100%}
   .car-drive{transform:none !important}
   .exhaust,.tire-smoke i,.skid{opacity:1}
 }
+
+/* ===== iPhone Pro/Pro Max notch-proof tweak (final) ===== */
+@media (max-width: 720px){
+  /* Bigger visual header height + extra safe-area pad */
+  :root{
+    --header-h: 72px; /* was 64 */
+  }
+
+  .site-header{
+    position: fixed !important;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: var(--navy) !important;
+    background-clip: padding-box;
+    padding-left: max(20px, var(--safe-left));
+    padding-right: max(20px, var(--safe-right));
+    /* small base padding so the spacer below isn't the only thing */
+    padding-top: calc(var(--safe-top) + 6px) !important;
+  }
+
+  /* Hard spacer that physically pushes content below the dynamic island/notch */
+  .site-header::before{
+    content:"";
+    display:block;
+    height: calc(var(--safe-top) + 4px); /* extra 4px cushion */
+  }
+
+  .header-inner{
+    min-height: var(--header-h) !important;
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: 12px;
+  }
+
+  .brand{ grid-column: 2; justify-self: center; }
+  .nav{ grid-column: 3; justify-self: end; }
+  .header-logo{ height: auto !important; max-width: 186px; } /* tiny trim helps too */
+
+  /* Push the hero down by the *real* header stack height */
+  .site-header + .hero{
+    margin-top: calc(var(--header-h) + var(--safe-top) + 10px) !important;
+  }
+}
+
+/* If nav ever wraps, allow gentle scroll instead of clipping */
+@media (max-width: 380px){
+  .nav{ overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; }
+}
