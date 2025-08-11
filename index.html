@@ -139,21 +139,26 @@
   </section>
 
   <!-- Gallery -->
-  <section id="gallery" class="section">
-    <div class="container">
-      <h2>Gallery</h2>
-      <p class="sub">A look around the shop and our work.</p>
-      <div class="gallery-grid" id="gallery-grid"></div>
-    </div>
+ <section id="gallery" class="section">
+  <div class="container">
+    <h2>Gallery</h2>
+    <p class="sub">A look around the shop and our work.</p>
 
-    <div class="lightbox" id="lightbox" aria-hidden="true">
-      <button class="lightbox-close" aria-label="Close">&times;</button>
-      <img id="lightbox-img" alt="">
-      <button class="lightbox-prev" aria-label="Previous">&#10094;</button>
-      <button class="lightbox-next" aria-label="Next">&#10095;</button>
+    <div class="gallery-wrap">
+      <button class="gal-nav prev" aria-label="Previous photo">&#10094;</button>
+      <div class="gallery-rail" id="gallery-rail" tabindex="0" aria-label="Shop photo gallery (swipe or use arrows)"></div>
+      <button class="gal-nav next" aria-label="Next photo">&#10095;</button>
     </div>
-  </section>
+  </div>
 
+  <!-- Lightbox (unchanged) -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close">&times;</button>
+    <img id="lightbox-img" alt="">
+    <button class="lightbox-prev" aria-label="Previous">&#10094;</button>
+    <button class="lightbox-next" aria-label="Next">&#10095;</button>
+  </div>
+</section>
   <!-- Contact / Map -->
   <section id="contact" class="section alt">
     <div class="container contact">
