@@ -160,6 +160,40 @@ body{
   100% {opacity:0; transform:translate(-44px,-10px) scale(1.5)}
 }
 
+.car-drive {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tire smoke container */
+.tire-smoke {
+  position: absolute;
+  bottom: 15%; /* moves smoke higher — tweak as needed */
+  left: -10%;  /* moves it slightly behind the car */
+  display: flex;
+  gap: 0.3em;
+  z-index: 1; /* keep behind car */
+}
+
+/* Each smoke puff */
+.tire-smoke i {
+  display: block;
+  width: 8%;    /* size relative to car container */
+  height: 8%;
+  background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(200,200,200,0) 70%);
+  border-radius: 50%;
+  animation: puff 1.5s infinite ease-out;
+  opacity: 0.7;
+}
+
+.tire-smoke i:nth-child(2) { animation-delay: 0.3s; }
+.tire-smoke i:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes puff {
+  0%   { transform: scale(0.5) translateY(0); opacity: 0.8; }
+  50%  { transform: scale(1) translateY(-20%); opacity: 0.4; }
+  100% { transform: scale(1.5) translateY(-40%); opacity: 0; }
+}
 /* Skid shadow */
 .skid{
   position:absolute; left:28px; bottom:20px;
