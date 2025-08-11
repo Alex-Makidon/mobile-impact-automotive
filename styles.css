@@ -346,4 +346,38 @@ img,iframe{max-width:100%}
 @media (max-width: 768px){
   .reviews-wrapper{ align-items: center; }
   .review-cta{ align-self: center; }
+}/* ==== iOS safe-area: prevent sticky header from sitting under the notch ==== */
+:root{
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+/* Fallback for older iOS (uses constant()) */
+@supports not (padding: max(0px)) {
+  :root{ --safe-top: constant(safe-area-inset-top, 0px); }
+}
+
+/* Give the header safe-area padding and keep its background solid */
+.site-header{
+  padding-top: calc(12px + var(--safe-top)) !important;
+  background: var(--navy) !important;
+  background-clip: padding-box;
+  position: sticky; top: 0; z-index: 50;
+}
+
+/* Ensure the inner row remains tall enough on phones */
+@media (max-width: 720px){
+  .header-inner{
+    min-height: calc(56px + var(--safe-top)) !important;
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: 12px;
+  }
+  .brand{ grid-column: 2; justify-self: center; }
+  .nav{ grid-column: 3; justify-self: end; }
+  .header-logo{ height: auto !important; max-width: 190px; }
+}
+
+/* If menu text ever wraps, allow gentle scroll instead of clipping */
+@media (max-width: 380px){
+  .nav{ overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
 }
