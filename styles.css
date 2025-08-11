@@ -269,3 +269,40 @@ section.hero       { background: var(--navy) !important; }
 
 /* Make sure no accidental opacity dimmed them */
 header.site-header, section.hero { opacity: 1 !important; }
+
+/* ========= Quick Fix Patch (append at end) ========= */
+
+/* 1) First-paint safeguard: keep top of page navy even before CSS finishes painting */
+html{ background: var(--navy); }
+
+/* Ensure hero paints navy immediately (even if other rules load later) */
+.hero{ background: var(--navy) !important; }
+
+/* 2) Mobile header: center the logo, keep nav on the right, no weird gap */
+@media (max-width: 720px){
+  .header-inner{
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr;  /* left spacer • logo • nav */
+    align-items: center;
+    gap: 12px;
+  }
+  .brand{ grid-column: 2; justify-self: center; }
+  .nav{ grid-column: 3; justify-self: end; }
+  /* Give the logo a max width instead of a fixed height so it doesn't shrink oddly */
+  .header-logo{
+    height: auto !important;
+    max-width: 200px;   /* tweak 190–220px if you want it larger/smaller */
+  }
+}
+
+/* 3) Services grid: resilient layout that avoids clipping on narrow screens */
+#services .grid{
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+  gap: 16px;
+}
+
+/* If you ever hit very small devices (≤360px), force single column for comfort */
+@media (max-width: 360px){
+  #services .grid{ grid-template-columns: 1fr !important; }
+}
