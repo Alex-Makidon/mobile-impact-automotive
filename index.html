@@ -246,75 +246,108 @@
   </script>
 
   <!-- Gallery builder + lightbox -->
-  <script>
-  const galleryImages = [
-    { src: 'assets/gallery/shop-front.jpg', alt: 'Shop front' },
-    { src: 'assets/gallery/bay-work.jpg',   alt: 'Tech working in the bay' },
-    { src: 'assets/gallery/brake-job.jpg',  alt: 'Brake service' },
-  ];
+ <script>
+/* Images you want in the gallery */
+const galleryImages = [
+  { src: 'assets/gallery/shop-front.jpg', alt: 'Shop front' },
+  { src: 'assets/gallery/bay-work.jpg',   alt: 'Tech working in the bay' },
+  { src: 'assets/gallery/brake-job.jpg',  alt: 'Brake service' },
+  // add more here...
+];
 
-  (function(){
-    const grid = document.getElementById('gallery-grid');
-    if (!grid) return;
+/* Build the swipeable rail + wire the lightbox */
+(function(){
+  const rail = document.getElementById('gallery-rail');
+  if (!rail) return;
 
-    galleryImages.forEach(({src, alt}, index) => {
-      const a = document.createElement('a');
-      a.href = src; a.className = 'thumb'; a.dataset.index = index;
-      const img = document.createElement('img');
-      img.src = src; img.alt = alt || ''; img.loading = 'lazy'; img.decoding = 'async';
-      a.appendChild(img);
-      grid.appendChild(a);
-    });
+  // Build slides
+  galleryImages.forEach(({src, alt}, index) => {
+    const a = document.createElement('a');
+    a.className = 'slide';
+    a.href = src;
+    a.dataset.index = index;
 
-    const lb = document.getElementById('lightbox');
-    const lbImg = document.getElementById('lightbox-img');
-    const btnClose = lb.querySelector('.lightbox-close');
-    const btnPrev  = lb.querySelector('.lightbox-prev');
-    const btnNext  = lb.querySelector('.lightbox-next');
+    const img = document.createElement('img');
+    img.src = src; img.alt = alt || ''; img.loading = 'lazy'; img.decoding = 'async';
 
-    let i = 0;
-    function show(idx){
-      i = idx;
-      lbImg.src = galleryImages[i].src;
-      lbImg.alt = galleryImages[i].alt || '';
-      lb.classList.add('open');
-      lb.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeLB(){
-      lb.classList.remove('open');
-      lb.setAttribute('aria-hidden','true');
-      document.body.style.overflow = '';
-    }
-    function prev(){ i = (i - 1 + galleryImages.length) % galleryImages.length; show(i); }
-    function next(){ i = (i + 1) % galleryImages.length; show(i); }
+    a.appendChild(img);
+    rail.appendChild(a);
+  });
 
-    grid.addEventListener('click', e => {
-      const t = e.target.closest('.thumb');
-      if (!t) return;
-      e.preventDefault();
-      show(parseInt(t.dataset.index, 10));
-    });
-    btnClose.addEventListener('click', closeLB);
-    btnPrev.addEventListener('click', e => { e.stopPropagation(); prev(); });
-    btnNext.addEventListener('click', e => { e.stopPropagation(); next(); });
-    lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+  // Prev/Next buttons scroll by one card width
+  const btnPrev = document.querySelector('.gal-nav.prev');
+  const btnNext = document.querySelector('.gal-nav.next');
 
-    document.addEventListener('keydown', e => {
-      if (!lb.classList.contains('open')) return;
-      if (e.key === 'Escape') closeLB();
-      if (e.key === 'ArrowLeft') prev();
-      if (e.key === 'ArrowRight') next();
-    });
-    let sx = 0;
-    lb.addEventListener('touchstart', e => { sx = e.changedTouches[0].clientX; }, {passive:true});
-    lb.addEventListener('touchend', e => {
-      const dx = e.changedTouches[0].clientX - sx;
-      if (Math.abs(dx) > 40) (dx > 0 ? prev() : next());
-    });
-  })();
-  </script>
+  function cardStride(){
+    const first = rail.querySelector('.slide');
+    if(!first) return 0;
+    const rect = first.getBoundingClientRect();
+    const gap = parseFloat(getComputedStyle(rail).gap || '0');
+    return rect.width + gap;
+  }
+  function snap(dir){
+    rail.scrollBy({ left: dir * cardStride(), behavior: 'smooth' });
+  }
+  if (btnPrev) btnPrev.addEventListener('click', () => snap(-1));
+  if (btnNext) btnNext.addEventListener('click', () => snap(1));
 
+  // Keyboard support when the rail is focused
+  rail.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); snap(1); }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); snap(-1); }
+  });
+
+  // Lightbox wiring (reuses your existing lightbox UI)
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  const btnClose = lb.querySelector('.lightbox-close');
+  const btnPrevLb  = lb.querySelector('.lightbox-prev');
+  const btnNextLb  = lb.querySelector('.lightbox-next');
+
+  let i = 0;
+  function show(idx){
+    i = (idx + galleryImages.length) % galleryImages.length;
+    lbImg.src = galleryImages[i].src;
+    lbImg.alt = galleryImages[i].alt || '';
+    lb.classList.add('open');
+    lb.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLB(){
+    lb.classList.remove('open');
+    lb.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+  function prev(){ show(i - 1); }
+  function next(){ show(i + 1); }
+
+  rail.addEventListener('click', e => {
+    const slide = e.target.closest('.slide');
+    if (!slide) return;
+    e.preventDefault();
+    show(parseInt(slide.dataset.index, 10));
+  });
+  btnClose.addEventListener('click', closeLB);
+  btnPrevLb.addEventListener('click', e => { e.stopPropagation(); prev(); });
+  btnNextLb.addEventListener('click', e => { e.stopPropagation(); next(); });
+  lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLB();
+    if (e.key === 'ArrowLeft') prev();
+    if (e.key === 'ArrowRight') next();
+  });
+
+  // Touch swipe in lightbox
+  let sx = 0;
+  lb.addEventListener('touchstart', e => { sx = e.changedTouches[0].clientX; }, {passive:true});
+  lb.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) > 40) (dx > 0 ? prev() : next());
+  });
+})();
+</script>
   <!-- Start at top & (re)start animations -->
   <script>
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
