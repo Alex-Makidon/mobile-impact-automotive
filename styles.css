@@ -340,3 +340,22 @@ html, body { overflow-x: hidden; }
     bottom: 14px;
   }
 }
+/* Responsive columns for the generic .grid (Services section) */
+.grid { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 16px; 
+}
+
+/* Tablet: 2 columns */
+@media (max-width: 900px){
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Phone: 1 column */
+@media (max-width: 600px){
+  .grid { grid-template-columns: 1fr; }
+}
+
+/* Just in case something forced a fixed height somewhere */
+.card { height: auto; }
