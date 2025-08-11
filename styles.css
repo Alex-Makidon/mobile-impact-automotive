@@ -368,3 +368,27 @@ img,iframe{max-width:100%}
 @media (max-width: 380px){
   .nav{ overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; }
 }
+/* ===== iPhone portrait tuning: cap logo + tighten nav so header never clips ===== */
+@media screen and (max-width: 480px) and (orientation: portrait){
+  /* Make the header a touch shorter and cap the logo inside it */
+  :root{ --header-h: 60px; } /* was 68px */
+  
+  .header-inner{ min-height: var(--header-h) !important; }
+
+  .header-logo{
+    /* Keep the logo fully inside the header in portrait */
+    max-height: calc(var(--header-h) - 18px) !important; /* ≈42px */
+    max-width: 168px !important;                         /* prevents wide stretch */
+  }
+
+  /* Tighten the nav so it doesn't force extra height */
+  .nav{ gap: 14px; }
+  .nav a{ font-size: 15px; line-height: 1; }
+  .site-header .btn-primary{ padding: 8px 12px; }
+
+  /* Push the hero down by the final header height */
+  .ios-safe-spacer + .site-header + .hero,
+  .site-header + .hero{
+    margin-top: var(--header-h) !important;
+  }
+}
