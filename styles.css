@@ -320,3 +320,30 @@ img,iframe{max-width:100%}
 @media (max-width: 380px){
   .nav{ overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling: touch; }
 }
+/* === Reviews layout fixes (long text won't crush the Google button) === */
+.reviews-wrapper{
+  align-items: flex-start;          /* keep button aligned to top of text */
+}
+
+.reviews-rotator{
+  flex: 1 1 auto;                   /* review takes remaining space */
+  min-width: 320px;                 /* avoid super-narrow rotator */
+}
+
+.review-cta{
+  flex: 0 0 auto;                   /* do not shrink the CTA column */
+  align-self: flex-start;           /* pin to top */
+}
+
+.google-review-btn{
+  white-space: nowrap;              /* keep "Review us on Google" on one line */
+  flex-shrink: 0;                   /* don't compress the button */
+  display: inline-flex;
+  align-items: center;
+}
+
+/* On smaller screens we already stack; just center the CTA nicely */
+@media (max-width: 768px){
+  .reviews-wrapper{ align-items: center; }
+  .review-cta{ align-self: center; }
+}
