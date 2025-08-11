@@ -448,3 +448,31 @@ img,iframe{max-width:100%}
   .gal-nav.prev{ left:4px; }
   .gal-nav.next{ right:4px; }
 }
+/* ===== Mobile portrait: left-align header ===== */
+@media screen and (max-width: 480px) and (orientation: portrait){
+  /* use a 2-col grid: [logo][nav] */
+  .header-inner{
+    display: grid !important;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--header-h, 62px);
+  }
+
+  /* put brand on the left edge */
+  .brand{ grid-column: 1; justify-self: start; }
+  .nav{ grid-column: 2; justify-self: start; }
+
+  /* trim side padding so the group sits closer to the left edge */
+  .site-header{
+    padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(8px,  env(safe-area-inset-right, 0px)) !important;
+  }
+  /* optional: slightly reduce container padding in header only */
+  .site-header .container{ padding-left: 0 !important; padding-right: 0 !important; }
+
+  /* logo + nav sizing so it doesn’t force the header taller */
+  .header-logo{ max-height: calc(var(--header-h, 62px) - 16px); max-width: 172px; height:auto; }
+  .nav{ gap: 14px; }
+  .site-header .btn-primary{ padding: 8px 12px; }
+}
