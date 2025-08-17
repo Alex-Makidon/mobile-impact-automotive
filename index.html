@@ -25,19 +25,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
-  <!-- Minimal critical paint: force blue on first frame -->
-  <style>
-    :root{ --hero-blue:#0b2a56; --white:#fff; }
-    html{ background: var(--hero-blue); color-scheme: light; }
-    .hero{ background: var(--hero-blue); color: var(--white); }
-
-    /* Prevent review rotator from changing page height */
-    .reviews-rotator{ position:relative; }
-    .review-card{ position:absolute; inset:0; opacity:0; transition:opacity .45s ease; }
-    .review-card.active{ position:absolute; inset:0; opacity:1; }
-  </style>
-
-  <!-- Main stylesheet -->
   <link rel="stylesheet" href="styles.css?v=14" />
 </head>
 <body>
@@ -144,7 +131,7 @@
     </div>
   </section>
 
-  <!-- Gallery (swipeable rail + lightbox) -->
+  <!-- Gallery -->
   <section id="gallery" class="section">
     <div class="container">
       <h2>Gallery</h2>
@@ -157,6 +144,7 @@
       </div>
     </div>
 
+    <!-- Lightbox -->
     <div class="lightbox" id="lightbox" aria-hidden="true">
       <button class="lightbox-close" aria-label="Close">&times;</button>
       <img id="lightbox-img" alt="">
@@ -204,20 +192,20 @@
 
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
-  <!-- Reviews rotator (locks height to prevent page jump) -->
+  <!-- Reviews rotator (height-locked to prevent page jump) -->
   <script>
   (function(){
     const rotator = document.querySelector('.reviews-rotator');
     if(!rotator) return;
-
     const cards = Array.from(rotator.querySelectorAll('.review-card'));
-    const dotsWrap = rotator.querySelector('.review-dots');
-    if (!cards.length || !dotsWrap) return;
+    if(cards.length === 0) return;
 
     // Build dots
+    const dotsWrap = rotator.querySelector('.review-dots');
     dotsWrap.innerHTML = '';
     let i = Math.max(0, cards.findIndex(c => c.classList.contains('active')));
     cards.forEach((c, idx) => c.id = 'review-'+idx);
+
     cards.forEach((_, idx) => {
       const dot = document.createElement('button');
       dot.type = 'button';
@@ -229,59 +217,55 @@
       dotsWrap.appendChild(dot);
     });
 
-    function setActive(idx){
+    function go(next, user=false){
       cards[i].classList.remove('active');
       dotsWrap.children[i].setAttribute('aria-selected','false');
-      i = (idx + cards.length) % cards.length;
+      i = (next + cards.length) % cards.length;
       cards[i].classList.add('active');
       dotsWrap.children[i].setAttribute('aria-selected','true');
+      if(user) restart();
     }
-    function go(next, user=false){ setActive(next); if(user) restart(); }
-    function next(){ go(i+1); }
-
-    // Lock container height to tallest card
-    function lockHeight(){
-      const prev = cards.map(c => c.classList.contains('active'));
-      cards.forEach(c => c.classList.add('active')); // reveal all to measure
-      const maxH = Math.max(...cards.map(c => c.scrollHeight));
-      rotator.style.height = maxH + 'px';
-      cards.forEach((c, idx) => c.classList.toggle('active', prev[idx]));
-    }
-    const debounced = (() => { let t; return () => { clearTimeout(t); t = setTimeout(lockHeight, 120); }; })();
-    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(lockHeight).catch(()=>{}); }
-    window.addEventListener('load', lockHeight, { once:true });
-    window.addEventListener('resize', debounced);
-
-    // Init
-    cards.forEach((c, idx)=> c.classList.toggle('active', idx===i));
-    lockHeight();
-
-    // Auto-rotate with pause on hover/focus
+    const next = () => go(i+1);
     let timer;
-    function restart(){ clearInterval(timer); timer = setInterval(next, 5000); }
+    const restart = () => { clearInterval(timer); timer = setInterval(next, 5000); };
+
+    // Lock container height to tallest card to prevent page jump
+    function lockHeight(){
+      const h = Math.max(...cards.map(c => {
+        c.style.position = 'relative'; c.style.opacity = '1';
+        const val = c.offsetHeight;
+        c.style.position = ''; c.style.opacity = '';
+        return val;
+      }));
+      rotator.style.minHeight = h + 36 + 'px'; // + dot area
+    }
+    window.addEventListener('load', lockHeight);
+    window.addEventListener('resize', () => { clearTimeout(window.__rv); window.__rv = setTimeout(lockHeight, 100); });
+
     rotator.addEventListener('mouseenter', ()=>clearInterval(timer));
     rotator.addEventListener('mouseleave', restart);
     rotator.addEventListener('focusin', ()=>clearInterval(timer));
     rotator.addEventListener('focusout', restart);
+
+    cards.forEach((c, idx)=> c.classList.toggle('active', idx===i));
     restart();
   })();
   </script>
 
-  <!-- Gallery auto-loader using absolute download_url (fixes desktop path issues) -->
+  <!-- Gallery builder + lightbox (swipeable rail) -->
   <script>
-  const GH_OWNER = "Alex-Makidon";
-  const GH_REPO  = "mobile-impact-automotive";
-  const GALLERY_DIR = "assets/gallery";
+  const galleryImages = [
+    { src: 'assets/gallery/shop-front.jpg', alt: 'Shop front' },
+    { src: 'assets/gallery/bay-work.jpg',   alt: 'Tech working in the bay' },
+    { src: 'assets/gallery/brake-job.jpg',  alt: 'Brake service' },
+  ];
 
-  const isImage = (name) => /\.(jpe?g|png|webp|gif)$/i.test(name);
-  const niceAlt = (name) => name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ').trim();
-
-  function buildGallery(galleryImages){
+  (function(){
     const rail = document.getElementById('gallery-rail');
-    if (!rail || !galleryImages?.length) return;
+    if (!rail) return;
 
-    rail.innerHTML = "";
-    galleryImages.forEach(({src,alt}, index) => {
+    // Build slides
+    galleryImages.forEach(({src, alt}, index) => {
       const a = document.createElement('a');
       a.className = 'slide';
       a.href = src;
@@ -294,6 +278,7 @@
       rail.appendChild(a);
     });
 
+    // Prev/Next buttons scroll by one card width
     const btnPrev = document.querySelector('.gal-nav.prev');
     const btnNext = document.querySelector('.gal-nav.next');
 
@@ -305,8 +290,14 @@
       return rect.width + gap;
     }
     function snap(dir){ rail.scrollBy({ left: dir * cardStride(), behavior: 'smooth' }); }
-    btnPrev?.addEventListener('click', () => snap(-1));
-    btnNext?.addEventListener('click', () => snap(1));
+    if (btnPrev) btnPrev.addEventListener('click', () => snap(-1));
+    if (btnNext) btnNext.addEventListener('click', () => snap(1));
+
+    // Keyboard support when focused
+    rail.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); snap(1); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); snap(-1); }
+    });
 
     // Lightbox
     const lb = document.getElementById('lightbox');
@@ -324,9 +315,13 @@
       lb.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
     }
-    function closeLB(){ lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); document.body.style.overflow = ''; }
-    function prev(){ show(i - 1); }
-    function next(){ show(i + 1); }
+    function closeLB(){
+      lb.classList.remove('open');
+      lb.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+    }
+    const prev = () => show(i - 1);
+    const next = () => show(i + 1);
 
     rail.addEventListener('click', e => {
       const slide = e.target.closest('.slide');
@@ -338,45 +333,25 @@
     btnPrevLb.addEventListener('click', e => { e.stopPropagation(); prev(); });
     btnNextLb.addEventListener('click', e => { e.stopPropagation(); next(); });
     lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+
     document.addEventListener('keydown', e => {
       if (!lb.classList.contains('open')) return;
       if (e.key === 'Escape') closeLB();
       if (e.key === 'ArrowLeft') prev();
       if (e.key === 'ArrowRight') next();
     });
+
+    // Touch swipe in lightbox
     let sx = 0;
     lb.addEventListener('touchstart', e => { sx = e.changedTouches[0].clientX; }, {passive:true});
     lb.addEventListener('touchend', e => {
       const dx = e.changedTouches[0].clientX - sx;
       if (Math.abs(dx) > 40) (dx > 0 ? prev() : next());
     });
-  }
-
-  (async function initAutoGallery(){
-    try{
-      const api = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GALLERY_DIR}?ref=main`;
-      const res = await fetch(api, { headers: { "Accept": "application/vnd.github+json" } });
-      if (!res.ok) throw new Error("GitHub API error");
-      const items = await res.json();
-
-      // Use absolute raw URLs so desktop/mobile both work
-      const files = items
-        .filter(it => it.type === "file" && isImage(it.name))
-        .sort((a,b) => a.name.localeCompare(b.name));
-
-      const galleryImages = files.map(it => ({
-        src: it.download_url,   // absolute URL fixes base-path issues on Pages
-        alt: niceAlt(it.name)
-      }));
-
-      buildGallery(galleryImages);
-    } catch(err){
-      console.warn("Gallery auto-load failed:", err);
-    }
   })();
   </script>
 
-  <!-- Start at top & (re)start animations -->
+  <!-- Start at top & start animations -->
   <script>
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.addEventListener('pageshow', () => window.scrollTo(0,0));
