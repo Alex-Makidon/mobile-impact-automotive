@@ -30,10 +30,15 @@
     :root{ --hero-blue:#0b2a56; --white:#fff; }
     html{ background: var(--hero-blue); color-scheme: light; }
     .hero{ background: var(--hero-blue); color: var(--white); }
+
+    /* Prevent review rotator from changing page height */
+    .reviews-rotator{ position:relative; }
+    .review-card{ position:absolute; inset:0; opacity:0; transition:opacity .45s ease; }
+    .review-card.active{ position:absolute; inset:0; opacity:1; }
   </style>
 
   <!-- Main stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=13" />
+  <link rel="stylesheet" href="styles.css?v=14" />
 </head>
 <body>
 
@@ -41,7 +46,7 @@
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="#">
-        <img src="assets/logo-white.png?v=13" alt="Mobile Impact Automotive logo" class="header-logo" />
+        <img src="assets/logo-white.png?v=14" alt="Mobile Impact Automotive logo" class="header-logo" />
       </a>
       <nav class="nav">
         <a href="#services">Services</a>
@@ -78,7 +83,7 @@
           <span class="exhaust" aria-hidden="true"></span>
           <span class="tire-smoke" aria-hidden="true"><i></i><i></i><i></i></span>
           <span class="skid" aria-hidden="true"></span>
-          <img src="assets/logo-white.png?v=13" alt="" class="hero-logo" />
+          <img src="assets/logo-white.png?v=14" alt="" class="hero-logo" />
         </div>
       </div>
     </div>
@@ -199,19 +204,20 @@
 
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
-  <!-- Reviews rotator -->
+  <!-- Reviews rotator (locks height to prevent page jump) -->
   <script>
   (function(){
     const rotator = document.querySelector('.reviews-rotator');
     if(!rotator) return;
-    const cards = Array.from(rotator.querySelectorAll('.review-card'));
-    if(cards.length === 0) return;
 
-    let dotsWrap = rotator.querySelector('.review-dots');
+    const cards = Array.from(rotator.querySelectorAll('.review-card'));
+    const dotsWrap = rotator.querySelector('.review-dots');
+    if (!cards.length || !dotsWrap) return;
+
+    // Build dots
     dotsWrap.innerHTML = '';
     let i = Math.max(0, cards.findIndex(c => c.classList.contains('active')));
     cards.forEach((c, idx) => c.id = 'review-'+idx);
-
     cards.forEach((_, idx) => {
       const dot = document.createElement('button');
       dot.type = 'button';
@@ -223,30 +229,45 @@
       dotsWrap.appendChild(dot);
     });
 
-    function go(next, user=false){
+    function setActive(idx){
       cards[i].classList.remove('active');
       dotsWrap.children[i].setAttribute('aria-selected','false');
-      i = (next + cards.length) % cards.length;
+      i = (idx + cards.length) % cards.length;
       cards[i].classList.add('active');
       dotsWrap.children[i].setAttribute('aria-selected','true');
-      if(user) restart();
     }
+    function go(next, user=false){ setActive(next); if(user) restart(); }
     function next(){ go(i+1); }
 
+    // Lock container height to tallest card
+    function lockHeight(){
+      const prev = cards.map(c => c.classList.contains('active'));
+      cards.forEach(c => c.classList.add('active')); // reveal all to measure
+      const maxH = Math.max(...cards.map(c => c.scrollHeight));
+      rotator.style.height = maxH + 'px';
+      cards.forEach((c, idx) => c.classList.toggle('active', prev[idx]));
+    }
+    const debounced = (() => { let t; return () => { clearTimeout(t); t = setTimeout(lockHeight, 120); }; })();
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(lockHeight).catch(()=>{}); }
+    window.addEventListener('load', lockHeight, { once:true });
+    window.addEventListener('resize', debounced);
+
+    // Init
+    cards.forEach((c, idx)=> c.classList.toggle('active', idx===i));
+    lockHeight();
+
+    // Auto-rotate with pause on hover/focus
     let timer;
     function restart(){ clearInterval(timer); timer = setInterval(next, 5000); }
-
     rotator.addEventListener('mouseenter', ()=>clearInterval(timer));
     rotator.addEventListener('mouseleave', restart);
     rotator.addEventListener('focusin', ()=>clearInterval(timer));
     rotator.addEventListener('focusout', restart);
-
-    cards.forEach((c, idx)=> c.classList.toggle('active', idx===i));
     restart();
   })();
   </script>
 
-  <!-- Gallery auto-loader (pulls every image in /assets/gallery via GitHub API) -->
+  <!-- Gallery auto-loader using absolute download_url (fixes desktop path issues) -->
   <script>
   const GH_OWNER = "Alex-Makidon";
   const GH_REPO  = "mobile-impact-automotive";
@@ -284,12 +305,8 @@
       return rect.width + gap;
     }
     function snap(dir){ rail.scrollBy({ left: dir * cardStride(), behavior: 'smooth' }); }
-    if (btnPrev) btnPrev.addEventListener('click', () => snap(-1));
-    if (btnNext) btnNext.addEventListener('click', () => snap(1));
-    rail.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); snap(1); }
-      if (e.key === 'ArrowLeft')  { e.preventDefault(); snap(-1); }
-    });
+    btnPrev?.addEventListener('click', () => snap(-1));
+    btnNext?.addEventListener('click', () => snap(1));
 
     // Lightbox
     const lb = document.getElementById('lightbox');
@@ -342,12 +359,13 @@
       if (!res.ok) throw new Error("GitHub API error");
       const items = await res.json();
 
+      // Use absolute raw URLs so desktop/mobile both work
       const files = items
         .filter(it => it.type === "file" && isImage(it.name))
         .sort((a,b) => a.name.localeCompare(b.name));
 
       const galleryImages = files.map(it => ({
-        src: it.path,               // site-relative path, works on Pages
+        src: it.download_url,   // absolute URL fixes base-path issues on Pages
         alt: niceAlt(it.name)
       }));
 
@@ -365,7 +383,7 @@
     window.addEventListener('load', () => {
       window.scrollTo(0,0);
       const car = document.querySelector('.car-drive');
-      if (car) void car.offsetWidth; // force reflow to restart CSS animations
+      if (car) void car.offsetWidth; // restart CSS animations cleanly
       document.body.classList.add('page-loaded');
     });
   </script>
