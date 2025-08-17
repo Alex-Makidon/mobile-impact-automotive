@@ -252,105 +252,122 @@
   })();
   </script>
 
-  <!-- Gallery builder + lightbox (swipeable rail) -->
-  <script>
-  const galleryImages = [
-    { src: 'assets/gallery/shop-front.webp', alt: 'Shop front' },
-    { src: 'assets/gallery/bay-work.jpg',   alt: 'Tech working in the bay' },
-    { src: 'assets/gallery/brake-job.jpg',  alt: 'Brake service' },
-  ];
+ <!-- Gallery builder + lightbox (swipeable rail with WebP+JPG fallback) -->
+<script>
+/* List each photo once; provide both webp and jpg names (same base name recommended) */
+const galleryImages = [
+  { webp: 'assets/gallery/shop-front.webp', jpg: 'assets/gallery/shop-front.jpg', alt: 'Shop front' },
+  { webp: 'assets/gallery/bay-work.webp',   jpg: 'assets/gallery/bay-work.jpg',   alt: 'Tech working in the bay' },
+  { webp: 'assets/gallery/brake-job.webp',  jpg: 'assets/gallery/brake-job.jpg',  alt: 'Brake service' },
+  // add more here...
+];
 
-  (function(){
-    const rail = document.getElementById('gallery-rail');
-    if (!rail) return;
+(function(){
+  const rail = document.getElementById('gallery-rail');
+  if (!rail) return;
 
-    // Build slides
-    galleryImages.forEach(({src, alt}, index) => {
-      const a = document.createElement('a');
-      a.className = 'slide';
-      a.href = src;
-      a.dataset.index = index;
+  // Build slides
+  galleryImages.forEach(({webp, jpg, alt}, index) => {
+    const a = document.createElement('a');
+    a.className = 'slide';
+    a.href = webp || jpg;               // open best source in lightbox
+    a.dataset.index = index;
+    a.setAttribute('aria-label', alt || '');
 
-      const img = document.createElement('img');
-      img.src = src; img.alt = alt || ''; img.loading = 'lazy'; img.decoding = 'async';
-
-      a.appendChild(img);
-      rail.appendChild(a);
-    });
-
-    // Prev/Next buttons scroll by one card width
-    const btnPrev = document.querySelector('.gal-nav.prev');
-    const btnNext = document.querySelector('.gal-nav.next');
-
-    function cardStride(){
-      const first = rail.querySelector('.slide');
-      if(!first) return 0;
-      const rect = first.getBoundingClientRect();
-      const gap = parseFloat(getComputedStyle(rail).gap || '0');
-      return rect.width + gap;
+    // <picture> with webp first, jpg fallback
+    const picture = document.createElement('picture');
+    if (webp) {
+      const s = document.createElement('source');
+      s.type = 'image/webp';
+      s.srcset = webp;
+      picture.appendChild(s);
     }
-    function snap(dir){ rail.scrollBy({ left: dir * cardStride(), behavior: 'smooth' }); }
-    if (btnPrev) btnPrev.addEventListener('click', () => snap(-1));
-    if (btnNext) btnNext.addEventListener('click', () => snap(1));
+    const img = document.createElement('img');
+    img.src = jpg || webp;              // fallback src for browsers without WebP
+    img.alt = alt || '';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    picture.appendChild(img);
 
-    // Keyboard support when focused
-    rail.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); snap(1); }
-      if (e.key === 'ArrowLeft')  { e.preventDefault(); snap(-1); }
-    });
+    a.appendChild(picture);
+    rail.appendChild(a);
+  });
 
-    // Lightbox
-    const lb = document.getElementById('lightbox');
-    const lbImg = document.getElementById('lightbox-img');
-    const btnClose = lb.querySelector('.lightbox-close');
-    const btnPrevLb  = lb.querySelector('.lightbox-prev');
-    const btnNextLb  = lb.querySelector('.lightbox-next');
+  // Prev/Next buttons scroll by one card width
+  const btnPrev = document.querySelector('.gal-nav.prev');
+  const btnNext = document.querySelector('.gal-nav.next');
 
-    let i = 0;
-    function show(idx){
-      i = (idx + galleryImages.length) % galleryImages.length;
-      lbImg.src = galleryImages[i].src;
-      lbImg.alt = galleryImages[i].alt || '';
-      lb.classList.add('open');
-      lb.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeLB(){
-      lb.classList.remove('open');
-      lb.setAttribute('aria-hidden','true');
-      document.body.style.overflow = '';
-    }
-    const prev = () => show(i - 1);
-    const next = () => show(i + 1);
+  function cardStride(){
+    const first = rail.querySelector('.slide');
+    if(!first) return 0;
+    const rect = first.getBoundingClientRect();
+    const gap = parseFloat(getComputedStyle(rail).gap || '0');
+    return rect.width + gap;
+  }
+  function snap(dir){ rail.scrollBy({ left: dir * cardStride(), behavior: 'smooth' }); }
+  if (btnPrev) btnPrev.addEventListener('click', () => snap(-1));
+  if (btnNext) btnNext.addEventListener('click', () => snap(1));
 
-    rail.addEventListener('click', e => {
-      const slide = e.target.closest('.slide');
-      if (!slide) return;
-      e.preventDefault();
-      show(parseInt(slide.dataset.index, 10));
-    });
-    btnClose.addEventListener('click', closeLB);
-    btnPrevLb.addEventListener('click', e => { e.stopPropagation(); prev(); });
-    btnNextLb.addEventListener('click', e => { e.stopPropagation(); next(); });
-    lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+  // Keyboard support when the rail is focused
+  rail.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); snap(1); }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); snap(-1); }
+  });
 
-    document.addEventListener('keydown', e => {
-      if (!lb.classList.contains('open')) return;
-      if (e.key === 'Escape') closeLB();
-      if (e.key === 'ArrowLeft') prev();
-      if (e.key === 'ArrowRight') next();
-    });
+  // Lightbox wiring
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  const btnClose = lb.querySelector('.lightbox-close');
+  const btnPrevLb  = lb.querySelector('.lightbox-prev');
+  const btnNextLb  = lb.querySelector('.lightbox-next');
 
-    // Touch swipe in lightbox
-    let sx = 0;
-    lb.addEventListener('touchstart', e => { sx = e.changedTouches[0].clientX; }, {passive:true});
-    lb.addEventListener('touchend', e => {
-      const dx = e.changedTouches[0].clientX - sx;
-      if (Math.abs(dx) > 40) (dx > 0 ? prev() : next());
-    });
-  })();
-  </script>
+  let i = 0;
+  function bestSrc(entry){ return (entry.webp || entry.jpg); }   // open webp if available
+  function jpgSrc(entry){ return (entry.jpg || entry.webp); }    // jpg fallback for <img> if needed
 
+  function show(idx){
+    i = (idx + galleryImages.length) % galleryImages.length;
+    lbImg.src = bestSrc(galleryImages[i]);
+    lbImg.alt = galleryImages[i].alt || '';
+    lb.classList.add('open');
+    lb.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLB(){
+    lb.classList.remove('open');
+    lb.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+  function prev(){ show(i - 1); }
+  function next(){ show(i + 1); }
+
+  rail.addEventListener('click', e => {
+    const slide = e.target.closest('.slide');
+    if (!slide) return;
+    e.preventDefault();
+    show(parseInt(slide.dataset.index, 10));
+  });
+  btnClose.addEventListener('click', closeLB);
+  btnPrevLb.addEventListener('click', e => { e.stopPropagation(); prev(); });
+  btnNextLb.addEventListener('click', e => { e.stopPropagation(); next(); });
+  lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLB();
+    if (e.key === 'ArrowLeft') prev();
+    if (e.key === 'ArrowRight') next();
+  });
+
+  // Touch swipe in lightbox
+  let sx = 0;
+  lb.addEventListener('touchstart', e => { sx = e.changedTouches[0].clientX; }, {passive:true});
+  lb.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) > 40) (dx > 0 ? prev() : next());
+  });
+})();
+</script>
   <!-- Start at top & start animations -->
   <script>
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
