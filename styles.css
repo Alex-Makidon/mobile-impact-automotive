@@ -31,7 +31,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 html,body{overflow-x:hidden}
-html{background:var(--navy)}           /* first paint if inline CSS misses */
+html{background:var(--navy)}           /* first paint safeguard */
 body{
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   color:var(--text);
@@ -40,7 +40,7 @@ body{
 }
 .container{max-width:1100px;margin:0 auto;padding:0 20px}
 
-/* account for fixed header scrolling to anchors */
+/* Sticky headers + anchor scrolling */
 html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 
 /* =============== */
@@ -61,7 +61,7 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 .header-logo{height:70px;width:auto;display:block}
 @media (max-width:900px){ .header-logo{height:60px} }
 
-/* Mobile: fixed header below notch (bullet-proof on iPhone) */
+/* Mobile: fixed header below notch (iPhone) */
 @media (max-width:720px){
   .site-header{
     position:fixed !important;
@@ -252,7 +252,7 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 @media (max-width:768px){ .reviews-wrapper{flex-direction:column;text-align:center;align-items:center} }
 .reviews-rotator{position:relative;min-height:150px;padding-bottom:36px;flex:1 1 auto;min-width:320px}
 .review-card{opacity:0;position:absolute;inset:0;transition:opacity .5s ease}
-.review-card.active{opacity:1;position:relative}
+.review-card.active{opacity:1;position:absolute}
 .review-dots{display:flex;gap:8px;justify-content:center;position:absolute;left:0;right:0;bottom:0}
 .review-dot{width:10px;height:10px;border-radius:50%;background:#c8d2e6;border:none;cursor:pointer}
 .review-dot[aria-selected="true"]{background:#0b2a56;transform:scale(1.1)}
@@ -271,24 +271,60 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 /* =============== */
 /*     Gallery     */
 /* =============== */
-.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.gallery-grid .thumb{position:relative;overflow:hidden;border-radius:12px;background:#e9edf5;aspect-ratio:4/3}
-.gallery-grid img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease}
-.gallery-grid .thumb:hover img{transform:scale(1.04)}
-@media (max-width:900px){ .gallery-grid{grid-template-columns:repeat(2,1fr)} }
-@media (max-width:600px){ .gallery-grid{grid-template-columns:1fr} }
-
-/* Lightbox */
-.lightbox{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.85);z-index:9999;padding:20px}
-.lightbox.open{display:grid}
-.lightbox img{max-width:min(100%,1100px);max-height:calc(100vh - 140px);border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
-.lightbox button{
-  position:absolute;background:rgba(255,255,255,.12);color:#fff;border:none;width:44px;height:44px;border-radius:50%;
-  display:grid;place-items:center;cursor:pointer;font-size:22px;backdrop-filter:blur(6px)
+.gallery-wrap{
+  position:relative;
+  margin-top:10px;
+  min-height: clamp(240px, 40vw, 420px); /* keeps layout steady while images load */
 }
-.lightbox-close{top:18px;right:18px;font-size:30px}
-.lightbox-prev{left:18px;top:50%;transform:translateY(-50%)}
-.lightbox-next{right:18px;top:50%;transform:translateY(-50%)}
+.gallery-rail{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:min(85vw, 360px);
+  gap:12px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  padding:4px 2px 8px;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.gallery-rail::-webkit-scrollbar{ display:none; }
+
+.gallery-rail .slide{
+  position:relative;
+  border-radius:12px;
+  overflow:hidden;
+  background:#e9edf5;
+  aspect-ratio:4/3;
+  scroll-snap-align:center;
+  cursor:pointer;
+  text-decoration:none; color:inherit; /* remove blue link style */
+}
+.gallery-rail .slide img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .3s ease;
+}
+.gallery-rail .slide:hover img{ transform:scale(1.03); }
+
+/* Desktop: show more per view */
+@media (min-width:900px){
+  .gallery-rail{ grid-auto-columns:min(28%, 340px); }
+}
+
+/* Arrow buttons */
+.gal-nav{
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:40px;height:40px;border-radius:50%;
+  border:none;background:rgba(255,255,255,.15); color:#fff;
+  display:grid; place-items:center; cursor:pointer; z-index:2;
+  backdrop-filter:blur(6px);
+}
+.gal-nav:hover{ background:rgba(255,255,255,.25); }
+.gal-nav.prev{ left:-4px; }
+.gal-nav.next{ right:-4px; }
+@media (max-width:480px){
+  .gal-nav.prev{ left:4px; }
+  .gal-nav.next{ right:4px; }
+}
 
 /* =============== */
 /*     Contact     */
@@ -321,13 +357,9 @@ img,iframe{max-width:100%}
   .exhaust,.tire-smoke i,.skid{opacity:1}
 }
 
-/* ===== iPhone Pro/Pro Max notch-proof tweak (final) ===== */
+/* ===== iPhone Pro/Pro Max notch-proof tweak ===== */
 @media (max-width: 720px){
-  /* Bigger visual header height + extra safe-area pad */
-  :root{
-    --header-h: 72px; /* was 64 */
-  }
-
+  :root{ --header-h: 72px; }
   .site-header{
     position: fixed !important;
     top: 0; left: 0; right: 0;
@@ -336,159 +368,39 @@ img,iframe{max-width:100%}
     background-clip: padding-box;
     padding-left: max(20px, var(--safe-left));
     padding-right: max(20px, var(--safe-right));
-    /* small base padding so the spacer below isn't the only thing */
     padding-top: calc(var(--safe-top) + 6px) !important;
   }
-
-  /* Hard spacer that physically pushes content below the dynamic island/notch */
   .site-header::before{
-    content:"";
-    display:block;
-    height: calc(var(--safe-top) + 4px); /* extra 4px cushion */
+    content:""; display:block; height: calc(var(--safe-top) + 4px);
   }
-
   .header-inner{
     min-height: var(--header-h) !important;
     display: grid !important;
     grid-template-columns: 1fr auto 1fr;
     align-items: center; gap: 12px;
   }
-
   .brand{ grid-column: 2; justify-self: center; }
   .nav{ grid-column: 3; justify-self: end; }
-  .header-logo{ height: auto !important; max-width: 186px; } /* tiny trim helps too */
-
-  /* Push the hero down by the *real* header stack height */
+  .header-logo{ height: auto !important; max-width: 186px; }
   .site-header + .hero{
     margin-top: calc(var(--header-h) + var(--safe-top) + 10px) !important;
   }
 }
-
 /* If nav ever wraps, allow gentle scroll instead of clipping */
 @media (max-width: 380px){
   .nav{ overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; }
 }
-/* ===== iPhone portrait tuning: cap logo + tighten nav so header never clips ===== */
+/* Mobile portrait: left-align header (as requested) */
 @media screen and (max-width: 480px) and (orientation: portrait){
-  /* Make the header a touch shorter and cap the logo inside it */
-  :root{ --header-h: 60px; } /* was 68px */
-  
-  .header-inner{ min-height: var(--header-h) !important; }
-
-  .header-logo{
-    /* Keep the logo fully inside the header in portrait */
-    max-height: calc(var(--header-h) - 18px) !important; /* ≈42px */
-    max-width: 168px !important;                         /* prevents wide stretch */
-  }
-
-  /* Tighten the nav so it doesn't force extra height */
-  .nav{ gap: 14px; }
-  .nav a{ font-size: 15px; line-height: 1; }
-  .site-header .btn-primary{ padding: 8px 12px; }
-
-  /* Push the hero down by the final header height */
-  .ios-safe-spacer + .site-header + .hero,
-  .site-header + .hero{
-    margin-top: var(--header-h) !important;
-  }
-}
-/* ===== Swipeable Gallery (scroll-snap) ===== */
-.gallery-wrap{
-  position:relative;
-  margin-top:10px;
-}
-
-.gallery-rail{
-  display:grid;
-  grid-auto-flow:column;
-  grid-auto-columns:min(85vw, 360px);     /* mobile: big, comfy cards */
-  gap:12px;
-  overflow-x:auto;
-  scroll-snap-type:x mandatory;
-  padding:4px 2px 8px;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-}
-.gallery-rail::-webkit-scrollbar{ display:none; }
-
-.gallery-rail .slide{
-  position:relative;
-  border-radius:12px;
-  overflow:hidden;
-  background:#e9edf5;
-  aspect-ratio:4/3;
-  scroll-snap-align:center;
-  cursor:pointer;
-}
-.gallery-rail .slide img{
-  width:100%;height:100%;object-fit:cover;display:block;
-  transition:transform .3s ease;
-}
-.gallery-rail .slide:hover img{ transform:scale(1.03); }
-
-/* Desktop: show more per view */
-@media (min-width:900px){
-  .gallery-rail{ grid-auto-columns:min(28%, 340px); }
-}
-
-/* Arrow buttons */
-.gal-nav{
-  position:absolute; top:50%; transform:translateY(-50%);
-  width:40px;height:40px;border-radius:50%;
-  border:none;background:rgba(255,255,255,.15); color:#fff;
-  display:grid; place-items:center; cursor:pointer; z-index:2;
-  backdrop-filter:blur(6px);
-}
-.gal-nav:hover{ background:rgba(255,255,255,.25); }
-.gal-nav.prev{ left:-4px; }
-.gal-nav.next{ right:-4px; }
-
-/* If space is tight on phones, nudge arrows inward a touch */
-@media (max-width:480px){
-  .gal-nav.prev{ left:4px; }
-  .gal-nav.next{ right:4px; }
-}
-/* ===== Mobile portrait: left-align header ===== */
-@media screen and (max-width: 480px) and (orientation: portrait){
-  /* use a 2-col grid: [logo][nav] */
-  .header-inner{
-    display: grid !important;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: 10px;
-    min-height: var(--header-h, 62px);
-  }
-
-  /* put brand on the left edge */
+  :root{ --header-h: 60px; }
+  .header-inner{ min-height: var(--header-h) !important; grid-template-columns: auto 1fr; gap:10px !important; }
   .brand{ grid-column: 1; justify-self: start; }
-  .nav{ grid-column: 2; justify-self: start; }
-
-  /* trim side padding so the group sits closer to the left edge */
+  .nav{ grid-column: 2; justify-self: start; gap:14px; }
   .site-header{
     padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
     padding-right: max(8px,  env(safe-area-inset-right, 0px)) !important;
   }
-  /* optional: slightly reduce container padding in header only */
   .site-header .container{ padding-left: 0 !important; padding-right: 0 !important; }
-
-  /* logo + nav sizing so it doesn’t force the header taller */
-  .header-logo{ max-height: calc(var(--header-h, 62px) - 16px); max-width: 172px; height:auto; }
-  .nav{ gap: 14px; }
+  .header-logo{ max-height: calc(var(--header-h) - 16px); max-width: 172px; height:auto; }
   .site-header .btn-primary{ padding: 8px 12px; }
-}
-/* === Lock review rotator height to prevent page shift === */
-.reviews-rotator{
-  position: relative;
-  /* height will be set via JS to the tallest card */
-}
-.review-card{
-  position: absolute;            /* take cards out of normal flow */
-  inset: 0;
-  opacity: 0;
-  transition: opacity .45s ease;
-}
-.review-card.active{
-  position: absolute;            /* keep absolute even when active */
-  inset: 0;
-  opacity: 1;
 }
