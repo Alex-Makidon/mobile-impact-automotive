@@ -476,3 +476,19 @@ img,iframe{max-width:100%}
   .nav{ gap: 14px; }
   .site-header .btn-primary{ padding: 8px 12px; }
 }
+/* === Lock review rotator height to prevent page shift === */
+.reviews-rotator{
+  position: relative;
+  /* height will be set via JS to the tallest card */
+}
+.review-card{
+  position: absolute;            /* take cards out of normal flow */
+  inset: 0;
+  opacity: 0;
+  transition: opacity .45s ease;
+}
+.review-card.active{
+  position: absolute;            /* keep absolute even when active */
+  inset: 0;
+  opacity: 1;
+}
