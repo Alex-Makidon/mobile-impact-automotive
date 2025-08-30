@@ -397,3 +397,15 @@ img,iframe{max-width:100%}
     object-position: 50% 42% !important;
   }
 }
+/* Loosen the frame for owner photo */
+.owner-photo {
+  aspect-ratio: auto;      /* let height grow with the image */
+  height: auto;
+}
+
+.owner-photo picture > img.owner-photo-img {
+  width: 100%;
+  height: auto;            /* stop forcing the crop */
+  object-fit: contain;     /* show the whole image */
+  object-position: center center;
+}
