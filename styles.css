@@ -270,3 +270,25 @@ img,iframe{max-width:100%}
   .car-drive{transform:none !important}
   .exhaust,.tire-smoke i,.skid{opacity:1}
 }
+/* Safeguard: ensure Google review button never blows up on mobile */
+.google-review-btn{
+  display:inline-flex !important;
+  align-items:center;
+  gap:8px;
+  padding:10px 18px;
+  border:2px solid #4285F4;
+  border-radius:8px;
+  background:#fff;
+  color:#4285F4;
+  text-decoration:none;
+  white-space:nowrap;
+}
+.google-review-btn:hover{ background:#4285F4; color:#fff; }
+.google-review-btn:hover .google-icon{ filter:brightness(0) invert(1); }
+
+.google-review-btn .google-icon,
+.google-review-btn img{
+  width:20px !important;
+  height:20px !important;
+  display:inline-block;
+  flex:0 0 auto;
