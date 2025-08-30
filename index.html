@@ -25,7 +25,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=14" />
+  <!-- first paint: blue hero/header -->
+  <style>
+    :root{ --hero-blue:#0b2a56; --white:#fff; }
+    html{ background: var(--hero-blue); color-scheme: light; }
+    .hero{ background: var(--hero-blue); color: var(--white); }
+  </style>
+
+  <link rel="stylesheet" href="styles.css?v=final2" />
 </head>
 <body>
 
@@ -33,11 +40,12 @@
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="#">
-        <img src="assets/logo-white.png?v=14" alt="Mobile Impact Automotive logo" class="header-logo" />
+        <img src="assets/logo-white.png?v=final2" alt="Mobile Impact Automotive logo" class="header-logo" />
       </a>
       <nav class="nav">
         <a href="#services">Services</a>
         <a href="#about">About</a>
+        <a href="#team">Our Team</a>
         <a href="#reviews">Reviews</a>
         <a href="#gallery">Gallery</a>
         <a href="tel:+17706766787" class="btn btn-primary">Call Now</a>
@@ -70,7 +78,7 @@
           <span class="exhaust" aria-hidden="true"></span>
           <span class="tire-smoke" aria-hidden="true"><i></i><i></i><i></i></span>
           <span class="skid" aria-hidden="true"></span>
-          <img src="assets/logo-white.png?v=14" alt="" class="hero-logo" />
+          <img src="assets/logo-white.png?v=final2" alt="" class="hero-logo" />
         </div>
       </div>
     </div>
@@ -97,6 +105,31 @@
     <div class="container">
       <h2>About</h2>
       <p>Mobile Impact Automotive is a trusted, family-owned shop serving the Snellville community with honest service and expert workmanship. We stand behind our repairs and treat every vehicle like our own.</p>
+    </div>
+  </section>
+
+  <!-- Meet the Owner / Head Mechanic -->
+  <section id="team" class="section">
+    <div class="container">
+      <h2>Meet the Owner &amp; Head Mechanic</h2>
+      <div class="team">
+        <div class="person">
+          <div class="avatar">
+            <!-- put an image at assets/team/owner.jpg (any aspect; it’s masked round) -->
+            <img src="assets/team/owner.jpg" alt="Owner / Head Mechanic">
+          </div>
+          <div class="bio">
+            <h3>Alex Makidon</h3>
+            <p class="title">Owner &amp; Head Mechanic</p>
+            <p>Alex brings years of dealership and independent shop experience, specializing in diagnostics, electrical, and Sprinter vans. He believes in straight answers, quality parts, and work done right the first time.</p>
+            <ul class="badges">
+              <li>ASE Certified</li>
+              <li>Sprinter Specialist</li>
+              <li>Domestic &amp; European</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -131,13 +164,15 @@
     </div>
   </section>
 
-  <!-- Gallery -->
+  <!-- Gallery (rebuilt from scratch; no stray buttons) -->
   <section id="gallery" class="section">
     <div class="container">
       <h2>Gallery</h2>
       <p class="sub">A look around the shop and our work.</p>
 
-
+      <div class="gallery-wrap">
+        <div class="gallery-rail" id="gallery-rail" tabindex="0" aria-label="Shop photo gallery (swipe or scroll)"></div>
+      </div>
     </div>
 
     <!-- Lightbox -->
@@ -188,7 +223,7 @@
 
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
-  <!-- Reviews rotator (height-locked to prevent page jump) -->
+  <!-- Reviews rotator (height-locked, no page jump) -->
   <script>
   (function(){
     const rotator = document.querySelector('.reviews-rotator');
@@ -196,11 +231,20 @@
     const cards = Array.from(rotator.querySelectorAll('.review-card'));
     if(cards.length === 0) return;
 
-    // Build dots
-    const dotsWrap = rotator.querySelector('.review-dots');
+    let dotsWrap = rotator.querySelector('.review-dots');
     dotsWrap.innerHTML = '';
     let i = Math.max(0, cards.findIndex(c => c.classList.contains('active')));
     cards.forEach((c, idx) => c.id = 'review-'+idx);
+
+    // lock height to tallest card
+    function lockHeight(){
+      const h = Math.max(...cards.map(c => (c.style.position='relative', c.offsetHeight)));
+      rotator.style.height = h + 'px';
+      cards.forEach(c => c.style.position='absolute');
+    }
+    window.addEventListener('load', lockHeight);
+    window.addEventListener('resize', lockHeight);
+    lockHeight();
 
     cards.forEach((_, idx) => {
       const dot = document.createElement('button');
@@ -221,22 +265,10 @@
       dotsWrap.children[i].setAttribute('aria-selected','true');
       if(user) restart();
     }
-    const next = () => go(i+1);
-    let timer;
-    const restart = () => { clearInterval(timer); timer = setInterval(next, 5000); };
+    function next(){ go(i+1); }
 
-    // Lock container height to tallest card to prevent page jump
-    function lockHeight(){
-      const h = Math.max(...cards.map(c => {
-        c.style.position = 'relative'; c.style.opacity = '1';
-        const val = c.offsetHeight;
-        c.style.position = ''; c.style.opacity = '';
-        return val;
-      }));
-      rotator.style.minHeight = h + 36 + 'px'; // + dot area
-    }
-    window.addEventListener('load', lockHeight);
-    window.addEventListener('resize', () => { clearTimeout(window.__rv); window.__rv = setTimeout(lockHeight, 100); });
+    let timer;
+    function restart(){ clearInterval(timer); timer = setInterval(next, 5000); }
 
     rotator.addEventListener('mouseenter', ()=>clearInterval(timer));
     rotator.addEventListener('mouseleave', restart);
@@ -248,130 +280,94 @@
   })();
   </script>
 
- <!-- Gallery builder + lightbox (swipeable rail with WebP+JPG fallback) -->
-<script>
-/* List each photo once; provide both webp and jpg names (same base name recommended) */
-const galleryImages = [
-  { webp: 'assets/gallery/shop-front.webp', jpg: 'assets/gallery/shop-front.jpg', alt: 'Shop front' },
-  { webp: 'assets/gallery/bay-work.webp',   jpg: 'assets/gallery/bay-work.jpg',   alt: 'Tech working in the bay' },
-  { webp: 'assets/gallery/brake-job.webp',  jpg: 'assets/gallery/brake-job.jpg',  alt: 'Brake service' },
-  // add more here...
-];
+  <!-- Gallery builder (no external buttons; click = lightbox) -->
+  <script>
+  /* Add basenames only; the script tries .webp → .jpg → .png */
+  const galleryNames = ['shop-front','bay-work','brake-job'];
 
-(function(){
-  const rail = document.getElementById('gallery-rail');
-  if (!rail) return;
+  (function(){
+    const rail = document.getElementById('gallery-rail');
+    if (!rail) return;
 
-  // Build slides
-  galleryImages.forEach(({webp, jpg, alt}, index) => {
-    const a = document.createElement('a');
-    a.className = 'slide';
-    a.href = webp || jpg;               // open best source in lightbox
-    a.dataset.index = index;
-    a.setAttribute('aria-label', alt || '');
+    function buildItem(base, index){
+      const a = document.createElement('a');
+      a.className = 'slide';
+      a.dataset.index = index;
 
-    // <picture> with webp first, jpg fallback
-    const picture = document.createElement('picture');
-    if (webp) {
-      const s = document.createElement('source');
-      s.type = 'image/webp';
-      s.srcset = webp;
-      picture.appendChild(s);
+      const picture = document.createElement('picture');
+      const webp = document.createElement('source');
+      webp.type = 'image/webp';
+      webp.srcset = `assets/gallery/${base}.webp`;
+      picture.appendChild(webp);
+
+      const img = document.createElement('img');
+      img.alt = base.replace(/-/g,' ');
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.src = `assets/gallery/${base}.jpg`;
+      img.onerror = () => { if (img.src.endsWith('.jpg')) img.src = `assets/gallery/${base}.png`; };
+      picture.appendChild(img);
+
+      a.appendChild(picture);
+      a.href = `assets/gallery/${base}.webp`;
+      a.addEventListener('click', e => { e.preventDefault(); show(index); });
+      return a;
     }
-    const img = document.createElement('img');
-    img.src = jpg || webp;              // fallback src for browsers without WebP
-    img.alt = alt || '';
-    img.loading = 'lazy';
-    img.decoding = 'async';
-    picture.appendChild(img);
 
-    a.appendChild(picture);
-    rail.appendChild(a);
-  });
+    galleryNames.forEach((name, i) => rail.appendChild(buildItem(name, i)));
 
-  // Prev/Next buttons scroll by one card width
-  const btnPrev = document.querySelector('.gal-nav.prev');
-  const btnNext = document.querySelector('.gal-nav.next');
+    // Lightbox
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    const btnClose = lb.querySelector('.lightbox-close');
+    const btnPrev  = lb.querySelector('.lightbox-prev');
+    const btnNext  = lb.querySelector('.lightbox-next');
 
-  function cardStride(){
-    const first = rail.querySelector('.slide');
-    if(!first) return 0;
-    const rect = first.getBoundingClientRect();
-    const gap = parseFloat(getComputedStyle(rail).gap || '0');
-    return rect.width + gap;
-  }
-  function snap(dir){ rail.scrollBy({ left: dir * cardStride(), behavior: 'smooth' }); }
-  if (btnPrev) btnPrev.addEventListener('click', () => snap(-1));
-  if (btnNext) btnNext.addEventListener('click', () => snap(1));
+    let i = 0;
+    function show(idx){
+      i = (idx + galleryNames.length) % galleryNames.length;
+      const b = galleryNames[i];
+      lbImg.src = `assets/gallery/${b}.webp`;
+      lbImg.onerror = () => { lbImg.src = `assets/gallery/${b}.jpg`; };
+      lbImg.alt = b.replace(/-/g,' ');
+      lb.classList.add('open');
+      lb.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLB(){ lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); document.body.style.overflow = ''; }
+    function prev(){ show(i - 1); }
+    function next(){ show(i + 1); }
 
-  // Keyboard support when the rail is focused
-  rail.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') { e.preventDefault(); snap(1); }
-    if (e.key === 'ArrowLeft')  { e.preventDefault(); snap(-1); }
-  });
+    btnClose.addEventListener('click', closeLB);
+    btnPrev.addEventListener('click', e => { e.stopPropagation(); prev(); });
+    btnNext.addEventListener('click', e => { e.stopPropagation(); next(); });
+    lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
 
-  // Lightbox wiring
-  const lb = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lightbox-img');
-  const btnClose = lb.querySelector('.lightbox-close');
-  const btnPrevLb  = lb.querySelector('.lightbox-prev');
-  const btnNextLb  = lb.querySelector('.lightbox-next');
+    document.addEventListener('keydown', e => {
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLB();
+      if (e.key === 'ArrowLeft') prev();
+      if (e.key === 'ArrowRight') next();
+    });
 
-  let i = 0;
-  function bestSrc(entry){ return (entry.webp || entry.jpg); }   // open webp if available
-  function jpgSrc(entry){ return (entry.jpg || entry.webp); }    // jpg fallback for <img> if needed
+    // touch swipe in lightbox
+    let sx = 0;
+    lb.addEventListener('touchstart', e => { sx = e.changedTouches[0].clientX; }, {passive:true});
+    lb.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - sx;
+      if (Math.abs(dx) > 40) (dx > 0 ? prev() : next());
+    });
+  })();
+  </script>
 
-  function show(idx){
-    i = (idx + galleryImages.length) % galleryImages.length;
-    lbImg.src = bestSrc(galleryImages[i]);
-    lbImg.alt = galleryImages[i].alt || '';
-    lb.classList.add('open');
-    lb.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeLB(){
-    lb.classList.remove('open');
-    lb.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-  }
-  function prev(){ show(i - 1); }
-  function next(){ show(i + 1); }
-
-  rail.addEventListener('click', e => {
-    const slide = e.target.closest('.slide');
-    if (!slide) return;
-    e.preventDefault();
-    show(parseInt(slide.dataset.index, 10));
-  });
-  btnClose.addEventListener('click', closeLB);
-  btnPrevLb.addEventListener('click', e => { e.stopPropagation(); prev(); });
-  btnNextLb.addEventListener('click', e => { e.stopPropagation(); next(); });
-  lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
-
-  document.addEventListener('keydown', e => {
-    if (!lb.classList.contains('open')) return;
-    if (e.key === 'Escape') closeLB();
-    if (e.key === 'ArrowLeft') prev();
-    if (e.key === 'ArrowRight') next();
-  });
-
-  // Touch swipe in lightbox
-  let sx = 0;
-  lb.addEventListener('touchstart', e => { sx = e.changedTouches[0].clientX; }, {passive:true});
-  lb.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - sx;
-    if (Math.abs(dx) > 40) (dx > 0 ? prev() : next());
-  });
-})();
-</script>
-  <!-- Start at top & start animations -->
+  <!-- Start at top & (re)start animations -->
   <script>
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.addEventListener('pageshow', () => window.scrollTo(0,0));
     window.addEventListener('load', () => {
       window.scrollTo(0,0);
       const car = document.querySelector('.car-drive');
-      if (car) void car.offsetWidth; // restart CSS animations cleanly
+      if (car) void car.offsetWidth;
       document.body.classList.add('page-loaded');
     });
   </script>
