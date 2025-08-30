@@ -32,7 +32,7 @@
     .hero{ background: var(--hero-blue); color: var(--white); }
   </style>
 
-  <link rel="stylesheet" href="styles.css?v=final2" />
+  <link rel="stylesheet" href="styles.css?v=gallery-fix-1" />
 </head>
 <body>
 
@@ -107,33 +107,34 @@
     </div>
   </section>
   
-<!-- Meet the Owner -->
-<section id="owner" class="section">
-  <div class="container owner-wrap">
-    <div class="owner-photo">
-      <picture>
-        <source srcset="assets/owner-slavic.webp" type="image/webp" />
-        <img src="assets/owner-slavic.jpg" alt="Slavic Pascaru, owner and head mechanic"
-             loading="lazy" decoding="async" class="owner-photo-img" />
-      </picture>
-    </div>
+  <!-- Meet the Owner -->
+  <section id="owner" class="section">
+    <div class="container owner-wrap">
+      <div class="owner-photo">
+        <picture>
+          <source srcset="assets/owner-slavic.webp" type="image/webp" />
+          <!-- Use webp as the default too (avoids 404 if jpg not present) -->
+          <img src="assets/owner-slavic.webp" alt="Slavic Pascaru, owner and head mechanic"
+               loading="lazy" decoding="async" class="owner-photo-img" />
+        </picture>
+      </div>
 
-    <div class="owner-content">
-      <h2>Meet the Owner</h2>
-      <h3 class="owner-name">Slavic Pascaru</h3>
-      <p>
-        Slavic brings more than <strong>32 years of hands-on experience</strong> repairing
-        cars, trucks, and Sprinters. Known for meticulous attention to detail, he treats
-        every vehicle as if it were his own—combining expert diagnostics with honest,
-        dependable service.
-      </p>
-      <p>
-        Mobile Impact Automotive was built on Slavic’s commitment to quality and care.
-        Customers know their vehicles are in capable hands.
-      </p>
+      <div class="owner-content">
+        <h2>Meet the Owner</h2>
+        <h3 class="owner-name">Slavic Pascaru</h3>
+        <p>
+          Slavic brings more than <strong>32 years of hands-on experience</strong> repairing
+          cars, trucks, and Sprinters. Known for meticulous attention to detail, he treats
+          every vehicle as if it were his own—combining expert diagnostics with honest,
+          dependable service.
+        </p>
+        <p>
+          Mobile Impact Automotive was built on Slavic’s commitment to quality and care.
+          Customers know their vehicles are in capable hands.
+        </p>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
   
   <!-- Reviews -->
   <section id="reviews" class="section">
@@ -166,7 +167,7 @@
     </div>
   </section>
 
-  <!-- Gallery (rebuilt from scratch; no stray buttons) -->
+  <!-- Gallery -->
   <section id="gallery" class="section">
     <div class="container">
       <h2>Gallery</h2>
@@ -225,7 +226,7 @@
 
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
-  <!-- Reviews rotator (height-locked, no page jump) -->
+  <!-- Reviews rotator -->
   <script>
   (function(){
     const rotator = document.querySelector('.reviews-rotator');
@@ -238,7 +239,6 @@
     let i = Math.max(0, cards.findIndex(c => c.classList.contains('active')));
     cards.forEach((c, idx) => c.id = 'review-'+idx);
 
-    // lock height to tallest card
     function lockHeight(){
       const h = Math.max(...cards.map(c => (c.style.position='relative', c.offsetHeight)));
       rotator.style.height = h + 'px';
@@ -282,41 +282,74 @@
   })();
   </script>
 
-  <!-- Gallery builder (no external buttons; click = lightbox) -->
+  <!-- Gallery builder (paths fixed to assets/, skip missing files) -->
   <script>
-  /* Add basenames only; the script tries .webp → .jpg → .png */
+  // Add base names here. Script will try .webp → .jpg → .png and only show images that actually load.
   const galleryNames = ['shop-front','bay-work','brake-job'];
 
   (function(){
     const rail = document.getElementById('gallery-rail');
     if (!rail) return;
 
-    function buildItem(base, index){
+    function trySources(base){
+      return [
+        `assets/${base}.webp`,
+        `assets/${base}.jpg`,
+        `assets/${base}.png`
+      ];
+    }
+
+    function preloadFirstAvailable(base){
+      return new Promise((resolve, reject) => {
+        const sources = trySources(base);
+        let idx = 0;
+        const img = new Image();
+        function next(){
+          if (idx >= sources.length) return reject(new Error('not found'));
+          img.src = sources[idx++];
+        }
+        img.onload = () => resolve(img.src);
+        img.onerror = next;
+        next();
+      });
+    }
+
+    function buildItem(base, fullSrc){
       const a = document.createElement('a');
       a.className = 'slide';
-      a.dataset.index = index;
+      a.dataset.name = base;
 
       const picture = document.createElement('picture');
       const webp = document.createElement('source');
       webp.type = 'image/webp';
-      webp.srcset = `assets/gallery/${base}.webp`;
+      webp.srcset = `assets/${base}.webp`;
       picture.appendChild(webp);
 
       const img = document.createElement('img');
       img.alt = base.replace(/-/g,' ');
       img.loading = 'lazy';
       img.decoding = 'async';
-      img.src = `assets/gallery/${base}.jpg`;
-      img.onerror = () => { if (img.src.endsWith('.jpg')) img.src = `assets/gallery/${base}.png`; };
+      img.src = fullSrc;
       picture.appendChild(img);
 
       a.appendChild(picture);
-      a.href = `assets/gallery/${base}.webp`;
-      a.addEventListener('click', e => { e.preventDefault(); show(index); });
+      a.href = fullSrc;
+      a.addEventListener('click', e => { e.preventDefault(); show(base); });
       return a;
     }
 
-    galleryNames.forEach((name, i) => rail.appendChild(buildItem(name, i)));
+    // Build the rail, but only with files that actually exist
+    const existing = [];
+    Promise.allSettled(galleryNames.map(name => preloadFirstAvailable(name)))
+      .then(results => {
+        results.forEach((res, i) => {
+          if (res.status === 'fulfilled') {
+            const base = galleryNames[i];
+            existing.push(base);
+            rail.appendChild(buildItem(base, res.value));
+          }
+        });
+      });
 
     // Lightbox
     const lb = document.getElementById('lightbox');
@@ -326,19 +359,27 @@
     const btnNext  = lb.querySelector('.lightbox-next');
 
     let i = 0;
-    function show(idx){
-      i = (idx + galleryNames.length) % galleryNames.length;
-      const b = galleryNames[i];
-      lbImg.src = `assets/gallery/${b}.webp`;
-      lbImg.onerror = () => { lbImg.src = `assets/gallery/${b}.jpg`; };
+    function showByIndex(idx){
+      i = (idx + existing.length) % existing.length;
+      const b = existing[i];
+      const sources = [`assets/${b}.webp`,`assets/${b}.jpg`,`assets/${b}.png`];
+      lbImg.src = sources[0];
+      lbImg.onerror = () => {
+        if (lbImg.src.endsWith('.webp')) lbImg.src = sources[1];
+        else if (lbImg.src.endsWith('.jpg')) lbImg.src = sources[2];
+      };
       lbImg.alt = b.replace(/-/g,' ');
       lb.classList.add('open');
       lb.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
     }
+    function show(base){
+      const idx = existing.indexOf(base);
+      if (idx !== -1) showByIndex(idx);
+    }
     function closeLB(){ lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); document.body.style.overflow = ''; }
-    function prev(){ show(i - 1); }
-    function next(){ show(i + 1); }
+    function prev(){ showByIndex(i - 1); }
+    function next(){ showByIndex(i + 1); }
 
     btnClose.addEventListener('click', closeLB);
     btnPrev.addEventListener('click', e => { e.stopPropagation(); prev(); });
