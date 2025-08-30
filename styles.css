@@ -92,31 +92,16 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 .btn-outline:hover{background:#fff;color:var(--navy)}
 .site-header .btn-primary{background:transparent;color:#fff;border:2px solid #fff;border-radius:10px}
 .site-header .btn-primary:hover{background:#fff;color:var(--navy)}
-
-/* tighten nav on smaller screens */
-@media (max-width:600px){
-  .nav a{font-size:15px}
-  .site-header .btn-primary{padding:8px 14px}
-}
-@media (max-width: 480px){
+@media (max-width:600px){ .nav a{font-size:15px} .site-header .btn-primary{padding:8px 14px} }
+@media (max-width:480px){
   .site-header{
     padding-right: calc(max(12px, env(safe-area-inset-right, 0px)) + 12px) !important;
     padding-left:  max(12px, env(safe-area-inset-left, 0px)) !important;
   }
   .header-inner{ gap: 10px; }
-  .nav{
-    gap: 10px;
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-  }
-  .site-header .btn-primary{
-    padding: 7px 10px;
-    font-size: 14px;
-    line-height: 1;
-    border-radius: 9px;
-  }
-  .nav a{ font-size: 15px; line-height: 1; }
+  .nav{ gap: 10px; overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; }
+  .site-header .btn-primary{ padding: 7px 10px; font-size:14px; line-height:1; border-radius:9px; }
+  .nav a{ font-size:15px; line-height:1; }
 }
 
 /* =============== */
@@ -152,7 +137,7 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
   100%{transform:translateX(0) rotate(0)}
 }
 
-/* tire smoke / exhaust / skid ... (unchanged for brevity) */
+/* Tire smoke / exhaust / skid (unchanged essentials) */
 .car-drive .tire-smoke{position:absolute;pointer-events:none;z-index:3;left:clamp(10px,1.2vw,22px);bottom:clamp(78px,8.2vw,120px);display:flex;gap:clamp(8px,1.2vw,16px);will-change:transform,opacity}
 .car-drive .tire-smoke i{display:block;width:clamp(72px,11vw,150px);height:clamp(52px,9vw,110px);border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0) 70%);opacity:0;filter:blur(2.4px);animation:tire-smoke-puff 2.6s ease-out both}
 .page-loaded .tire-smoke i:nth-child(1){animation-delay:.12s}
@@ -192,27 +177,28 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 .card h3{margin:0 0 6px;font-size:18px}
 
 /* =============== */
-/*       Reviews   */
+/*     Reviews     */
 /* =============== */
 .reviews-wrapper{display:flex;align-items:flex-start;justify-content:space-between;gap:30px}
 @media (max-width:768px){ .reviews-wrapper{flex-direction:column;text-align:center;align-items:center} }
-.reviews-rotator{position:relative;min-height:150px;padding-bottom:36px;flex:1 1 auto;min-width:320px}
+.reviews-rotator{position:relative;min-height:150px;padding-bottom:56px;flex:1 1 auto;min-width:320px}
 .review-card{opacity:0;position:absolute;inset:0;transition:opacity .5s ease}
 .review-card.active{opacity:1}
-.review-dots{display:flex;gap:8px;justify-content:center;position:absolute;left:0;right:0;bottom:0}
+.review-dots{display:flex;gap:8px;justify-content:center;position:absolute;left:0;right:0;bottom:10px}
 .review-dot{width:10px;height:10px;border-radius:50%;background:#c8d2e6;border:none;cursor:pointer}
 .review-dot[aria-selected="true"]{background:#0b2a56;transform:scale(1.1)}
 .review-dot:focus-visible{outline:3px solid #0b2a56;outline-offset:2px;border-radius:999px}
 .review-cta{flex:0 0 auto;align-self:flex-start}
-.google-review-btn{
-  background:#fff;color:#4285F4;border:2px solid #4285F4;
-  display:inline-flex;align-items:center;gap:8px;font-weight:600;
-  padding:10px 18px;border-radius:8px;white-space:nowrap;flex-shrink:0;
-  transition:all .3s ease
+
+/* Mobile: natural height; dots flow below */
+@media (max-width:540px){
+  .reviews-rotator{ height:auto !important; padding-bottom:16px !important; }
+  .review-card{ position:static !important; opacity:1; display:none; }
+  .review-card.active{ display:block; }
+  .review-dots{ position:static !important; margin-top:10px; }
+  .reviews-wrapper{ gap:20px; }
+  .review-cta{ align-self:center; }
 }
-.google-review-btn:hover{background:#4285F4;color:#fff}
-.google-review-btn:hover .google-icon{filter:brightness(0) invert(1)}
-.google-icon{width:20px;height:20px;display:inline-block}
 
 /* =============== */
 /*     Gallery     */
@@ -275,9 +261,6 @@ img,iframe{max-width:100%}
 .owner-photo{ background:#e9edf5; border:1px solid #e6ecf5; border-radius:14px; overflow:hidden; aspect-ratio: 4 / 5; max-height: 520px; box-shadow:0 2px 6px rgba(10,20,40,.04); }
 .owner-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 18%; display:block; }
 @media (max-width:900px){ .owner-wrap{ grid-template-columns:1fr; } .owner-photo{ aspect-ratio: 3 / 4; max-height:none; } }
-.owner-content{ background:#fff; border:1px solid #e6ecf5; border-radius:14px; padding:18px; box-shadow:0 2px 6px rgba(10,20,40,.04); }
-.owner-content h2{ font-family:Montserrat,Inter,Arial,Helvetica,sans-serif; font-size:28px; margin:0 0 4px; }
-.owner-name{ margin:0 0 10px; font-weight:700; color:var(--navy); font-size:18px; }
 
 /* =============== */
 /*  Reduced Motion */
@@ -286,24 +269,4 @@ img,iframe{max-width:100%}
   *{animation:none !important;transition:none !important}
   .car-drive{transform:none !important}
   .exhaust,.tire-smoke i,.skid{opacity:1}
-}
-
-/* Reviews: ensure dots never cover text */
-.reviews-rotator{
-  position: relative;
-  padding-bottom: 56px;   /* was 36px */
-}
-@media (max-width: 540px){
-  .reviews-rotator{ padding-bottom: 72px; }
-}
-.review-dots{
-  position: absolute;
-  left: 0; right: 0; bottom: 10px;   /* keep a little breathing room */
-}
-
-/* Reviews: extra space on phones so CTA never crowds dots */
-@media (max-width: 540px){
-  .reviews-rotator{ padding-bottom: 84px; margin-bottom: 16px; }
-  .reviews-wrapper{ gap: 22px; } /* a bit more space between rotator and CTA */
-  .review-cta{ align-self: center; } /* center the button under the rotator */
 }
