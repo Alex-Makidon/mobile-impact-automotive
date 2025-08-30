@@ -32,7 +32,7 @@
     .hero{ background: var(--hero-blue); color: var(--white); }
   </style>
 
-  <link rel="stylesheet" href="styles.css?v=gallery-fix-1" />
+  <link rel="stylesheet" href="styles.css?v=autogallery-1" />
 </head>
 <body>
 
@@ -113,7 +113,6 @@
       <div class="owner-photo">
         <picture>
           <source srcset="assets/owner-slavic.webp" type="image/webp" />
-          <!-- Use webp as the default too (avoids 404 if jpg not present) -->
           <img src="assets/owner-slavic.webp" alt="Slavic Pascaru, owner and head mechanic"
                loading="lazy" decoding="async" class="owner-photo-img" />
         </picture>
@@ -239,18 +238,12 @@
     let i = Math.max(0, cards.findIndex(c => c.classList.contains('active')));
     cards.forEach((c, idx) => c.id = 'review-'+idx);
 
-    function lockHeight() {
-  // measure tallest review card
-  const h = Math.max(...cards.map(c => (c.style.position='relative', c.offsetHeight)));
-  rotator.style.height = h + 'px';
-
-  // stack cards in place
-  cards.forEach(c => c.style.position = 'absolute');
-
-  // adjust bottom padding so dots never overlap
-  const dotsH = (dotsWrap?.offsetHeight || 0) + 20;
-  rotator.style.paddingBottom = Math.max(56, dotsH) + 'px';
-}
+    function lockHeight(){
+      const h = Math.max(...cards.map(c => (c.style.position='relative', c.offsetHeight)));
+      rotator.style.height = h + 'px';
+      cards.forEach(c => c.style.position='absolute');
+      const dotsH = (dotsWrap?.offsetHeight || 0) + 20;
+      rotator.style.paddingBottom = Math.max(56, dotsH) + 'px';
     }
     window.addEventListener('load', lockHeight);
     window.addEventListener('resize', lockHeight);
@@ -290,26 +283,23 @@
   })();
   </script>
 
-  <!-- Gallery builder (paths fixed to assets/, skip missing files) -->
+  <!-- Auto-discover Gallery (assets/gallery/001.webp, 002.webp, 003.webp, ...) -->
   <script>
-  // Add base names here. Script will try .webp → .jpg → .png and only show images that actually load.
-  const galleryNames = ['shop-front','bay-work','brake-job'];
-
   (function(){
     const rail = document.getElementById('gallery-rail');
     if (!rail) return;
 
-    function trySources(base){
-      return [
-        `assets/${base}.webp`,
-        `assets/${base}.jpg`,
-        `assets/${base}.png`
-      ];
+    const FOLDER = 'assets/gallery';
+    const MAX_CHECK = 300;    // checks up to 300 files if present
+    const pad3 = n => String(n).padStart(3,'0');
+
+    function trySources(num){ // prefer webp, then jpg, then png
+      return [`${FOLDER}/${num}.webp`, `${FOLDER}/${num}.jpg`, `${FOLDER}/${num}.png`];
     }
 
-    function preloadFirstAvailable(base){
+    function preloadFirstAvailable(num){
       return new Promise((resolve, reject) => {
-        const sources = trySources(base);
+        const sources = trySources(num);
         let idx = 0;
         const img = new Image();
         function next(){
@@ -322,42 +312,41 @@
       });
     }
 
-    function buildItem(base, fullSrc){
+    function buildItem(num, src){
       const a = document.createElement('a');
       a.className = 'slide';
-      a.dataset.name = base;
+      a.dataset.num = num;
 
       const picture = document.createElement('picture');
       const webp = document.createElement('source');
       webp.type = 'image/webp';
-      webp.srcset = `assets/${base}.webp`;
+      webp.srcset = `${FOLDER}/${num}.webp`;
       picture.appendChild(webp);
 
       const img = document.createElement('img');
-      img.alt = base.replace(/-/g,' ');
+      img.alt = `gallery image ${num}`;
       img.loading = 'lazy';
       img.decoding = 'async';
-      img.src = fullSrc;
+      img.src = src;
       picture.appendChild(img);
 
       a.appendChild(picture);
-      a.href = fullSrc;
-      a.addEventListener('click', e => { e.preventDefault(); show(base); });
+      a.href = src;
+      a.addEventListener('click', e => { e.preventDefault(); openLightbox(num); });
       return a;
     }
 
-    // Build the rail, but only with files that actually exist
-    const existing = [];
-    Promise.allSettled(galleryNames.map(name => preloadFirstAvailable(name)))
-      .then(results => {
-        results.forEach((res, i) => {
-          if (res.status === 'fulfilled') {
-            const base = galleryNames[i];
-            existing.push(base);
-            rail.appendChild(buildItem(base, res.value));
-          }
-        });
-      });
+    const found = [];
+    (async function discover(){
+      for (let n = 1; n <= MAX_CHECK; n++){
+        const num = pad3(n);
+        try{
+          const src = await preloadFirstAvailable(num);
+          found.push(num);
+          rail.appendChild(buildItem(num, src));
+        }catch(_){}
+      }
+    })();
 
     // Lightbox
     const lb = document.getElementById('lightbox');
@@ -365,24 +354,25 @@
     const btnClose = lb.querySelector('.lightbox-close');
     const btnPrev  = lb.querySelector('.lightbox-prev');
     const btnNext  = lb.querySelector('.lightbox-next');
-
     let i = 0;
+
     function showByIndex(idx){
-      i = (idx + existing.length) % existing.length;
-      const b = existing[i];
-      const sources = [`assets/${b}.webp`,`assets/${b}.jpg`,`assets/${b}.png`];
+      if (!found.length) return;
+      i = (idx + found.length) % found.length;
+      const num = found[i];
+      const sources = trySources(num);
       lbImg.src = sources[0];
       lbImg.onerror = () => {
         if (lbImg.src.endsWith('.webp')) lbImg.src = sources[1];
         else if (lbImg.src.endsWith('.jpg')) lbImg.src = sources[2];
       };
-      lbImg.alt = b.replace(/-/g,' ');
+      lbImg.alt = `gallery image ${num}`;
       lb.classList.add('open');
       lb.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
     }
-    function show(base){
-      const idx = existing.indexOf(base);
+    function openLightbox(num){
+      const idx = found.indexOf(num);
       if (idx !== -1) showByIndex(idx);
     }
     function closeLB(){ lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); document.body.style.overflow = ''; }
@@ -393,19 +383,15 @@
     btnPrev.addEventListener('click', e => { e.stopPropagation(); prev(); });
     btnNext.addEventListener('click', e => { e.stopPropagation(); next(); });
     lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
-
     document.addEventListener('keydown', e => {
       if (!lb.classList.contains('open')) return;
       if (e.key === 'Escape') closeLB();
       if (e.key === 'ArrowLeft') prev();
       if (e.key === 'ArrowRight') next();
     });
-
-    // touch swipe in lightbox
-    let sx = 0;
-    lb.addEventListener('touchstart', e => { sx = e.changedTouches[0].clientX; }, {passive:true});
+    lb.addEventListener('touchstart', e => { lb._sx = e.changedTouches[0].clientX; }, {passive:true});
     lb.addEventListener('touchend', e => {
-      const dx = e.changedTouches[0].clientX - sx;
+      const dx = e.changedTouches[0].clientX - (lb._sx || 0);
       if (Math.abs(dx) > 40) (dx > 0 ? prev() : next());
     });
   })();
