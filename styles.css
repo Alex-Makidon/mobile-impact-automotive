@@ -10,13 +10,11 @@
   --bg:#f6f7fb;
   --white:#fff;
 
-  /* iOS safe-area + header sizing */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
-  --header-h: 64px; /* mobile visual header height */
+  --header-h: 64px;
 }
-/* Fallback for older iOS */
 @supports not (padding: max(0px)){
   :root{
     --safe-top: constant(safe-area-inset-top, 0px);
@@ -31,7 +29,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 html,body{overflow-x:hidden}
-html{background:var(--navy)}           /* first paint safeguard */
+html{background:var(--navy)}
 body{
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   color:var(--text);
@@ -39,8 +37,6 @@ body{
   line-height:1.6;
 }
 .container{max-width:1100px;margin:0 auto;padding:0 20px}
-
-/* Sticky headers + anchor scrolling */
 html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 
 /* =============== */
@@ -61,25 +57,23 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 .header-logo{height:70px;width:auto;display:block}
 @media (max-width:900px){ .header-logo{height:60px} }
 
-/* Mobile: fixed header below notch (iPhone) */
+/* iPhone-safe, left-aligned header */
 @media (max-width:720px){
+  :root{ --header-h: 72px; }
   .site-header{
-    position:fixed !important;
-    top:0;left:0;right:0;z-index:100;
-    padding-top:var(--safe-top);
+    position:fixed !important; top:0; left:0; right:0; z-index:100;
+    padding-top:calc(var(--safe-top) + 6px) !important;
     background-clip:padding-box;
   }
+  .site-header::before{ content:""; display:block; height:calc(var(--safe-top) + 4px); }
   .header-inner{
     min-height:var(--header-h);
-    display:grid !important;
-    grid-template-columns:1fr auto 1fr;
-    align-items:center;gap:12px;
+    display:grid !important; grid-template-columns:auto 1fr; gap:10px; align-items:center;
   }
-  .brand{grid-column:2;justify-self:center}
-  .nav{grid-column:3;justify-self:end}
-  .header-logo{height:auto !important;max-width:190px}
-  /* push hero down so it's not hidden behind fixed header */
-  .site-header + .hero{ margin-top: calc(var(--header-h) + var(--safe-top)); }
+  .brand{ grid-column:1; justify-self:start }
+  .nav{ grid-column:2; justify-self:start }
+  .header-logo{ max-height: calc(var(--header-h) - 16px); height:auto; max-width:172px }
+  .site-header + .hero{ margin-top: calc(var(--header-h) + var(--safe-top) + 10px) !important; }
 }
 
 /* Nav & buttons */
@@ -106,11 +100,7 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 /* =============== */
 /*      Hero       */
 /* =============== */
-.hero{
-  background:var(--navy);color:#fff;
-  padding:56px 0;
-  overflow:clip;
-}
+.hero{ background:var(--navy); color:#fff; padding:56px 0; overflow:clip; }
 .hero-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
 @media (max-width:900px){ .hero-inner{grid-template-columns:1fr} }
 @media (max-width:768px){
@@ -126,13 +116,12 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 .hero-logo{width:100%;max-width:760px;display:block;margin:0 auto;filter:drop-shadow(0 8px 30px rgba(0,0,0,.35))}
 @media (max-width:900px){ .hero-logo{max-width:520px} }
 
-/* Car + effects */
+/* =============== */
+/*   Car effects   */
+/* =============== */
 .hero-art{position:relative}
-.car-drive{
-  position:relative;display:inline-block;z-index:1;
-  transform:translateX(-120vw);will-change:transform,filter;
-}
-.page-loaded .car-drive{animation:car-drive-in 1.4s cubic-bezier(.22,.9,.26,1) .15s both;filter:drop-shadow(0 8px 30px rgba(0,0,0,.35))}
+.car-drive{ position:relative; display:inline-block; z-index:1; transform:translateX(-120vw); will-change:transform,filter; }
+.page-loaded .car-drive{ animation:car-drive-in 1.4s cubic-bezier(.22,.9,.26,1) .15s both; filter:drop-shadow(0 8px 30px rgba(0,0,0,.35)); }
 .car-drive .hero-logo{position:relative;z-index:2}
 @keyframes car-drive-in{
   0%{transform:translateX(-120vw) rotate(.6deg)}
@@ -141,72 +130,54 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
   100%{transform:translateX(0) rotate(0)}
 }
 
-/* Exhaust */
+/* Bigger, higher tire smoke */
+.car-drive .tire-smoke{
+  position:absolute; pointer-events:none; z-index:3;
+  left:clamp(10px,1.2vw,22px);
+  bottom:clamp(78px,8.2vw,120px);  /* higher */
+  display:flex; gap:clamp(8px,1.2vw,16px);
+  will-change:transform,opacity;
+}
+.car-drive .tire-smoke i{
+  display:block;
+  width:clamp(72px,11vw,150px);   /* bigger */
+  height:clamp(52px,9vw,110px);   /* bigger */
+  border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0) 70%);
+  opacity:0; filter:blur(2.4px);
+  animation:tire-smoke-puff 2.6s ease-out both;  /* lingers longer */
+}
+.page-loaded .tire-smoke i:nth-child(1){animation-delay:.12s}
+.page-loaded .tire-smoke i:nth-child(2){animation-delay:.52s}
+.page-loaded .tire-smoke i:nth-child(3){animation-delay:.92s}
+@keyframes tire-smoke-puff{
+  0%{opacity:.9; transform:translate(-10px,8px) scale(.95)}
+  35%{opacity:.75; transform:translate(-32px,-4px) scale(1.2)}
+  70%{opacity:.45; transform:translate(-78px,-26px) scale(1.65)}
+  100%{opacity:0; transform:translate(-112px,-46px) scale(2.05)}
+}
+
+/* Exhaust puffs */
 .exhaust{
-  position:absolute;z-index:0;
+  position:absolute; z-index:0;
   left:clamp(-14px,-1.2vw,-6px);
-  bottom:clamp(28px,3.8vw,48px);
-  width:clamp(16px,2.2vw,24px);
-  height:clamp(16px,2.2vw,24px);
+  bottom:clamp(36px,4.6vw,54px);
+  width:clamp(18px,2.6vw,28px);
+  height:clamp(18px,2.6vw,28px);
   border-radius:50%;
   background:radial-gradient(closest-side,rgba(255,255,255,.9),rgba(255,255,255,0) 70%);
-  opacity:0;filter:blur(.6px);
+  opacity:0; filter:blur(.7px);
 }
 .page-loaded .exhaust{animation:exhaust1 1.3s ease-out .22s both}
-.exhaust::before,.exhaust::after{content:"";position:absolute;inset:0;border-radius:50%;background:inherit;opacity:0;filter:blur(.6px)}
+.exhaust::before,.exhaust::after{content:"";position:absolute;inset:0;border-radius:50%;background:inherit;opacity:0;filter:blur(.7px)}
 .page-loaded .exhaust::before{animation:exhaust2 1.4s ease-out .34s both}
 .page-loaded .exhaust::after{animation:exhaust3 1.5s ease-out .46s both}
 @keyframes exhaust1{0%{transform:translate(-6px,8px) scale(.6);opacity:0}25%{opacity:.55}100%{transform:translate(-48px,-6px) scale(1.5);opacity:0}}
 @keyframes exhaust2{0%{transform:translate(-4px,10px) scale(.5);opacity:0}30%{opacity:.5}100%{transform:translate(-58px,-10px) scale(1.7);opacity:0}}
 @keyframes exhaust3{0%{transform:translate(-2px,12px) scale(.45);opacity:0}35%{opacity:.45}100%{transform:translate(-68px,-14px) scale(1.9);opacity:0}}
 
-/* Tire smoke */
-.car-drive .tire-smoke{
-  position:absolute;pointer-events:none;z-index:3;
-  left:clamp(14px,1.6vw,28px);
-  bottom:clamp(56px,6.5vw,92px);
-  display:flex;gap:clamp(6px,1vw,14px);
-  will-change:transform,opacity;
-}
-.car-drive .tire-smoke i{
-  display:block;
-  width:clamp(56px,9vw,120px);
-  height:clamp(40px,7vw,90px);
-  border-radius:50%;
-  background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0) 70%);
-  opacity:0;filter:blur(2px);
-  animation:tire-smoke-puff 2.2s ease-out both;
-  will-change:transform,opacity;
-}
-.page-loaded .tire-smoke i:nth-child(1){animation-delay:.18s}
-.page-loaded .tire-smoke i:nth-child(2){animation-delay:.58s}
-.page-loaded .tire-smoke i:nth-child(3){animation-delay:.98s}
-@keyframes tire-smoke-puff{
-  0%{opacity:.85;transform:translate(-8px,8px) scale(.9)}
-  35%{opacity:.70;transform:translate(-26px,0) scale(1.15)}
-  70%{opacity:.45;transform:translate(-64px,-18px) scale(1.55)}
-  100%{opacity:0;transform:translate(-92px,-32px) scale(1.95)}
-}
-
-/* Mobile smoke boost */
-@media (max-width:600px){
-  .car-drive .tire-smoke{
-    bottom:clamp(64px,12vw,90px);
-    left:clamp(12px,4vw,24px);
-  }
-  .car-drive .tire-smoke i{
-    width:clamp(56px,16vw,96px);
-    height:clamp(40px,13vw,72px);
-    animation-duration:2.6s;
-    filter:blur(2.2px);
-  }
-}
-
-/* Skid shadow */
-.skid{
-  position:absolute;z-index:0;
-  left:clamp(28px,2.4vw,40px);
-  bottom:clamp(24px,3vw,34px);
+/* Skid */
+.skid{ position:absolute; z-index:0; left:clamp(28px,2.4vw,40px); bottom:clamp(28px,3.6vw,42px);
   height:2px;width:0;border-radius:2px;
   background:linear-gradient(90deg,rgba(20,26,38,.35),rgba(20,26,38,0));
   opacity:0;filter:blur(.6px);pointer-events:none;
@@ -220,10 +191,10 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 
 /* Optional hero text fade-in */
 .page-loaded .hero-text>*{animation:hero-fade-up .6s ease both}
-.page-loaded .hero-text>*:nth-child(1){animation-delay:.25s}
-.page-loaded .hero-text>*:nth-child(2){animation-delay:.35s}
-.page-loaded .hero-text>*:nth-child(3){animation-delay:.45s}
-.page-loaded .hero-text>*:nth-child(4){animation-delay:.55s}
+.page-loaded .hero-text>*:nth-child(1){animation-delay;.25s}
+.page-loaded .hero-text>*:nth-child(2){animation-delay;.35s}
+.page-loaded .hero-text>*:nth-child(3){animation-delay;.45s}
+.page-loaded .hero-text>*:nth-child(4){animation-delay;.55s}
 @keyframes hero-fade-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* =============== */
@@ -234,16 +205,33 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 .section h2{font-family:Montserrat,Inter,Arial,Helvetica,sans-serif;font-size:28px;margin:0 0 8px}
 .section .sub{color:#525f75;margin:0 0 22px}
 
-/* Services grid (never clips) */
+/* Services grid */
 #services .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
   gap:16px;
 }
 @media (max-width:360px){ #services .grid{ grid-template-columns:1fr } }
-
 .card{background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:18px;box-shadow:0 2px 6px rgba(10,20,40,.04)}
 .card h3{margin:0 0 6px;font-size:18px}
+
+/* =============== */
+/*       Team      */
+/* =============== */
+.team .person{
+  display:grid; grid-template-columns:120px 1fr; gap:18px; align-items:center;
+  background:#fff; border:1px solid #e6ecf5; border-radius:14px; padding:18px;
+}
+.team .avatar{ width:120px; height:120px; border-radius:999px; overflow:hidden; background:#e9edf5; }
+.team .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+.team .bio h3{ margin:0 0 4px; }
+.team .bio .title{ margin:0 0 8px; color:#516079; font-weight:600; }
+.team .badges{ display:flex; gap:8px; margin:10px 0 0; padding:0; list-style:none; flex-wrap:wrap; }
+.team .badges li{ background:#eef3ff; color:#0b2a56; border:1px solid #dbe6ff; border-radius:999px; padding:6px 10px; font-weight:600; font-size:12px; }
+@media (max-width:600px){
+  .team .person{ grid-template-columns:1fr; text-align:center; }
+  .team .avatar{ margin:0 auto; }
+}
 
 /* =============== */
 /*     Reviews     */
@@ -252,7 +240,7 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 @media (max-width:768px){ .reviews-wrapper{flex-direction:column;text-align:center;align-items:center} }
 .reviews-rotator{position:relative;min-height:150px;padding-bottom:36px;flex:1 1 auto;min-width:320px}
 .review-card{opacity:0;position:absolute;inset:0;transition:opacity .5s ease}
-.review-card.active{opacity:1;position:absolute}
+.review-card.active{opacity:1}
 .review-dots{display:flex;gap:8px;justify-content:center;position:absolute;left:0;right:0;bottom:0}
 .review-dot{width:10px;height:10px;border-radius:50%;background:#c8d2e6;border:none;cursor:pointer}
 .review-dot[aria-selected="true"]{background:#0b2a56;transform:scale(1.1)}
@@ -271,44 +259,35 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 /* =============== */
 /*     Gallery     */
 /* =============== */
-.gallery-wrap{
-  position:relative;
-  margin-top:10px;
-  min-height: clamp(240px, 40vw, 420px); /* keeps layout steady while images load */
-}
+/* Fresh swipe rail; NO buttons outside the lightbox */
+.gallery-wrap{ position:relative; margin-top:10px; }
 .gallery-rail{
-  display:grid;
-  grid-auto-flow:column;
-  grid-auto-columns:min(85vw, 360px);
-  gap:12px;
-  overflow-x:auto;
-  scroll-snap-type:x mandatory;
-  padding:4px 2px 8px;
-  -webkit-overflow-scrolling:touch;
+  display:grid; grid-auto-flow:column; grid-auto-columns:min(85vw, 360px);
+  gap:12px; overflow-x:auto; padding:4px 2px 8px;
+  scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
   scrollbar-width:none;
 }
 .gallery-rail::-webkit-scrollbar{ display:none; }
-
 .gallery-rail .slide{
-  position:relative;
-  border-radius:12px;
-  overflow:hidden;
-  background:#e9edf5;
-  aspect-ratio:4/3;
-  scroll-snap-align:center;
-  cursor:pointer;
-  text-decoration:none; color:inherit; /* remove blue link style */
+  position:relative; border-radius:12px; overflow:hidden; background:#e9edf5;
+  aspect-ratio:4/3; scroll-snap-align:center; cursor:pointer;
 }
-.gallery-rail .slide img{
-  width:100%;height:100%;object-fit:cover;display:block;
-  transition:transform .3s ease;
-}
+.gallery-rail .slide img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .3s ease; }
 .gallery-rail .slide:hover img{ transform:scale(1.03); }
+@media (min-width:900px){ .gallery-rail{ grid-auto-columns:min(28%, 340px); } }
 
-/* Desktop: show more per view */
-@media (min-width:900px){
-  .gallery-rail{ grid-auto-columns:min(28%, 340px); }
+/* Lightbox */
+.lightbox{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.85);z-index:9999;padding:20px}
+.lightbox.open{display:grid}
+.lightbox img{max-width:min(100%,1100px);max-height:calc(100vh - 140px);border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.lightbox button{
+  position:absolute;background:rgba(255,255,255,.12);color:#fff;border:none;width:44px;height:44px;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;font-size:22px;backdrop-filter:blur(6px)
 }
+.lightbox-close{top:18px;right:18px;font-size:30px}
+.lightbox-prev{left:18px;top:50%;transform:translateY(-50%)}
+.lightbox-next{right:18px;top:50%;transform:translateY(-50%)}
+
 /* =============== */
 /*     Contact     */
 /* =============== */
@@ -339,57 +318,3 @@ img,iframe{max-width:100%}
   .car-drive{transform:none !important}
   .exhaust,.tire-smoke i,.skid{opacity:1}
 }
-
-/* ===== iPhone Pro/Pro Max notch-proof tweak ===== */
-@media (max-width: 720px){
-  :root{ --header-h: 72px; }
-  .site-header{
-    position: fixed !important;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    background: var(--navy) !important;
-    background-clip: padding-box;
-    padding-left: max(20px, var(--safe-left));
-    padding-right: max(20px, var(--safe-right));
-    padding-top: calc(var(--safe-top) + 6px) !important;
-  }
-  .site-header::before{
-    content:""; display:block; height: calc(var(--safe-top) + 4px);
-  }
-  .header-inner{
-    min-height: var(--header-h) !important;
-    display: grid !important;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center; gap: 12px;
-  }
-  .brand{ grid-column: 2; justify-self: center; }
-  .nav{ grid-column: 3; justify-self: end; }
-  .header-logo{ height: auto !important; max-width: 186px; }
-  .site-header + .hero{
-    margin-top: calc(var(--header-h) + var(--safe-top) + 10px) !important;
-  }
-}
-/* If nav ever wraps, allow gentle scroll instead of clipping */
-@media (max-width: 380px){
-  .nav{ overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; }
-}
-/* Mobile portrait: left-align header (as requested) */
-@media screen and (max-width: 480px) and (orientation: portrait){
-  :root{ --header-h: 60px; }
-  .header-inner{ min-height: var(--header-h) !important; grid-template-columns: auto 1fr; gap:10px !important; }
-  .brand{ grid-column: 1; justify-self: start; }
-  .nav{ grid-column: 2; justify-self: start; gap:14px; }
-  .site-header{
-    padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
-    padding-right: max(8px,  env(safe-area-inset-right, 0px)) !important;
-  }
-  .site-header .container{ padding-left: 0 !important; padding-right: 0 !important; }
-  .header-logo{ max-height: calc(var(--header-h) - 16px); max-width: 172px; height:auto; }
-  .site-header .btn-primary{ padding: 8px 12px; }
-}
-
-/* Hide any stray/legacy gallery toolbars or captions */
-.gal-toolbar, .gal-dots, .gal-caption, .gal-extras { display:none !important; }
-
-/* Ensure slide anchors never show underlined text if an image fails */
-.gallery-rail .slide { text-decoration: none; color: inherit; }
