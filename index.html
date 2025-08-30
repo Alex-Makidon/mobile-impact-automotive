@@ -32,7 +32,7 @@
     .hero{ background: var(--hero-blue); color: var(--white); }
   </style>
 
-  <link rel="stylesheet" href="styles.css?v=autogallery-1" />
+  <link rel="stylesheet" href="styles.css?v=autogallery-mobilefix-2" />
 </head>
 <body>
 
@@ -128,7 +128,7 @@
           dependable service.
         </p>
         <p>
-          Mobile Impact Automotive was built on Slavic’s commitment to quality and care.
+          Mobile Impact Automotive was built on Slavik’s commitment to quality and care.
           Customers know their vehicles are in capable hands.
         </p>
       </div>
@@ -141,18 +141,18 @@
       <div class="reviews-rotator" aria-live="polite">
         <div class="review-card active">
           <div class="stars" aria-label="5 star rating">★★★★★</div>
-          <p>“Best shop and mechanic ever. If you are looking for great quality work and honesty, You have found the right spot. I recommend Mobile Impact Automotive to everyone!"</p>
-          <div class="reviewer">— Alex Makidon</div>
+          <p>“They diagnosed my issue quickly and got me back on the road the same day. Great communication and fair pricing.”</p>
+          <div class="reviewer">— Google reviewer</div>
         </div>
         <div class="review-card">
           <div class="stars" aria-label="5 star rating">★★★★★</div>
-          <p>“Top notch mechanic , Slavic specializes in Mercedes and knows everything about them , and really any car but he rebuilt my S550 flawlessly and in a timely manner, highly recommend.”</p>
-          <div class="reviewer">— Andrea Business</div>
+          <p>“Fantastic service! Honest and friendly staff.”</p>
+          <div class="reviewer">— Google reviewer</div>
         </div>
         <div class="review-card">
           <div class="stars" aria-label="5 star rating">★★★★★</div>
-          <p>“My husband and I had a few things done here for our cars, the most recent service we had was get our AC fixed on our Acura. We are really satisfied with the quality work and customer service that Mr. Slavik provided us with. And we were surprized that he is very reasonable with his fees too. We will definitely come back to this place!”</p>
-          <div class="reviewer">— Tatyana Lungu</div>
+          <p>“Quick turnaround and excellent work. Highly recommend!”</p>
+          <div class="reviewer">— Google reviewer</div>
         </div>
         <div class="review-dots" role="tablist" aria-label="Reviews"></div>
       </div>
@@ -223,11 +223,34 @@
     </div>
   </footer>
 
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Start hero effects ASAP (not blocked by images)
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    function startFX(){
+      const car = document.querySelector('.car-drive');
+      if (car) { void car.offsetWidth; document.body.classList.add('page-loaded'); }
+    }
+    document.addEventListener('DOMContentLoaded', () => { window.scrollTo(0,0); startFX(); });
+    window.addEventListener('load', () => { window.scrollTo(0,0); startFX(); });
+  </script>
 
   <!-- Reviews rotator -->
   <script>
- 
+  (function(){
+    const rotator = document.querySelector('.reviews-rotator');
+    if(!rotator) return;
+    const cards = Array.from(rotator.querySelectorAll('.review-card'));
+    if(cards.length === 0) return;
+
+    let dotsWrap = rotator.querySelector('.review-dots');
+    dotsWrap.innerHTML = '';
+    let i = Math.max(0, cards.findIndex(c => c.classList.contains('active')));
+    cards.forEach((c, idx) => c.id = 'review-'+idx);
+
+    // Create dots
     cards.forEach((_, idx) => {
       const dot = document.createElement('button');
       dot.type = 'button';
@@ -238,43 +261,36 @@
       dot.addEventListener('click', () => go(idx, true));
       dotsWrap.appendChild(dot);
     });
-function lockHeight() {
-  // measure tallest card
-  const h = Math.max(...cards.map(c => {
-    c.style.position = 'relative';
-    return c.offsetHeight;
-  }));
-  rotator.style.height = h + 'px';
-  cards.forEach(c => c.style.position = 'absolute');
 
-  // ensure room for dots
-  const dotsH = (dotsWrap?.offsetHeight || 0) + 20;
-  rotator.style.paddingBottom = Math.max(56, dotsH) + 'px';
-}
+    const mqMobile = window.matchMedia('(max-width: 540px)');
+    function lockHeight() {
+      if (mqMobile.matches) {
+        rotator.style.height = 'auto';
+        rotator.style.paddingBottom = '16px';
+        cards.forEach(c => c.style.position = '');
+        return;
+      }
+      const h = Math.max(...cards.map(c => (c.style.position='relative', c.offsetHeight)));
+      rotator.style.height = h + 'px';
+      cards.forEach(c => c.style.position='absolute');
+      const dotsH = (dotsWrap?.offsetHeight || 0) + 20;
+      rotator.style.paddingBottom = Math.max(56, dotsH) + 'px';
+    }
 
-// also re-measure after fonts/resize/orientation
-window.addEventListener('load', lockHeight);
-window.addEventListener('resize', lockHeight);
-window.addEventListener('orientationchange', lockHeight);
-if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(lockHeight);
-}
+    window.addEventListener('load', lockHeight);
+    window.addEventListener('resize', lockHeight);
+    window.addEventListener('orientationchange', lockHeight);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockHeight);
+    mqMobile.addEventListener?.('change', lockHeight);
+    lockHeight();
 
-// when changing slides, re-lock height
-function go(next, user=false){
-  cards[i].classList.remove('active');
-  dotsWrap.children[i].setAttribute('aria-selected','false');
-  i = (next + cards.length) % cards.length;
-  cards[i].classList.add('active');
-  dotsWrap.children[i].setAttribute('aria-selected','true');
-  lockHeight();                    // <— important
-  if(user) restart();
-}    function go(next, user=false){
+    function go(next, user=false){
       cards[i].classList.remove('active');
       dotsWrap.children[i].setAttribute('aria-selected','false');
       i = (next + cards.length) % cards.length;
       cards[i].classList.add('active');
       dotsWrap.children[i].setAttribute('aria-selected','true');
+      lockHeight();
       if(user) restart();
     }
     function next(){ go(i+1); }
@@ -292,70 +308,60 @@ function go(next, user=false){
   })();
   </script>
 
-  <!-- Auto-discover Gallery (assets/gallery/001.webp, 002.webp, 003.webp, ...) -->
+  <!-- Auto-discover Gallery (assets/gallery/001.webp, 002.webp, ...) -->
   <script>
   (function(){
     const rail = document.getElementById('gallery-rail');
     if (!rail) return;
 
     const FOLDER = 'assets/gallery';
-    const MAX_CHECK = 300;    // checks up to 300 files if present
+    const MAX_CHECK = 200;
+    const GAP_TO_STOP = 5;
     const pad3 = n => String(n).padStart(3,'0');
 
-    function trySources(num){ // prefer webp, then jpg, then png
-      return [`${FOLDER}/${num}.webp`, `${FOLDER}/${num}.jpg`, `${FOLDER}/${num}.png`];
-    }
+    function sources(num){ return [`${FOLDER}/${num}.webp`, `${FOLDER}/${num}.jpg`, `${FOLDER}/${num}.png`]; }
 
-    function preloadFirstAvailable(num){
+    function preload(num){
       return new Promise((resolve, reject) => {
-        const sources = trySources(num);
-        let idx = 0;
-        const img = new Image();
-        function next(){
-          if (idx >= sources.length) return reject(new Error('not found'));
-          img.src = sources[idx++];
-        }
+        const list = sources(num);
+        let k = 0; const img = new Image();
+        function next(){ if (k >= list.length) return reject(); img.src = list[k++]; }
         img.onload = () => resolve(img.src);
         img.onerror = next;
         next();
       });
     }
 
-    function buildItem(num, src){
+    function tile(num, src){
       const a = document.createElement('a');
-      a.className = 'slide';
-      a.dataset.num = num;
-
+      a.className = 'slide'; a.dataset.num = num;
       const picture = document.createElement('picture');
-      const webp = document.createElement('source');
-      webp.type = 'image/webp';
-      webp.srcset = `${FOLDER}/${num}.webp`;
-      picture.appendChild(webp);
-
-      const img = document.createElement('img');
-      img.alt = `gallery image ${num}`;
-      img.loading = 'lazy';
-      img.decoding = 'async';
-      img.src = src;
-      picture.appendChild(img);
-
-      a.appendChild(picture);
-      a.href = src;
-      a.addEventListener('click', e => { e.preventDefault(); openLightbox(num); });
+      const webp = document.createElement('source'); webp.type = 'image/webp'; webp.srcset = `${FOLDER}/${num}.webp`;
+      const img = document.createElement('img'); img.alt = `gallery image ${num}`; img.loading='lazy'; img.decoding='async'; img.src = src;
+      picture.appendChild(webp); picture.appendChild(img); a.appendChild(picture);
+      a.href = src; a.addEventListener('click', e => { e.preventDefault(); openLB(num); });
       return a;
     }
 
     const found = [];
-    (async function discover(){
+    async function discover(){
+      let gap = 0;
       for (let n = 1; n <= MAX_CHECK; n++){
         const num = pad3(n);
         try{
-          const src = await preloadFirstAvailable(num);
+          const src = await preload(num);
           found.push(num);
-          rail.appendChild(buildItem(num, src));
-        }catch(_){}
+          rail.appendChild(tile(num, src));
+          gap = 0;
+        }catch(_){
+          if (++gap >= GAP_TO_STOP && found.length) break;
+        }
       }
-    })();
+    }
+    // Defer discovery to keep first paint/animation snappy
+    window.addEventListener('load', () => {
+      (window.requestIdleCallback || (fn=>setTimeout(fn,0)))(discover);
+    });
 
     // Lightbox
     const lb = document.getElementById('lightbox');
@@ -369,21 +375,16 @@ function go(next, user=false){
       if (!found.length) return;
       i = (idx + found.length) % found.length;
       const num = found[i];
-      const sources = trySources(num);
-      lbImg.src = sources[0];
+      const list = sources(num);
+      lbImg.src = list[0];
       lbImg.onerror = () => {
-        if (lbImg.src.endsWith('.webp')) lbImg.src = sources[1];
-        else if (lbImg.src.endsWith('.jpg')) lbImg.src = sources[2];
+        if (lbImg.src.endsWith('.webp')) lbImg.src = list[1];
+        else if (lbImg.src.endsWith('.jpg')) lbImg.src = list[2];
       };
       lbImg.alt = `gallery image ${num}`;
-      lb.classList.add('open');
-      lb.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
+      lb.classList.add('open'); lb.setAttribute('aria-hidden','false'); document.body.style.overflow = 'hidden';
     }
-    function openLightbox(num){
-      const idx = found.indexOf(num);
-      if (idx !== -1) showByIndex(idx);
-    }
+    function openLB(num){ const idx = found.indexOf(num); if (idx !== -1) showByIndex(idx); }
     function closeLB(){ lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); document.body.style.overflow = ''; }
     function prev(){ showByIndex(i - 1); }
     function next(){ showByIndex(i + 1); }
@@ -405,18 +406,5 @@ function go(next, user=false){
     });
   })();
   </script>
-
-  <!-- Start at top & (re)start animations -->
-  <script>
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    window.addEventListener('pageshow', () => window.scrollTo(0,0));
-    window.addEventListener('load', () => {
-      window.scrollTo(0,0);
-      const car = document.querySelector('.car-drive');
-      if (car) void car.offsetWidth;
-      document.body.classList.add('page-loaded');
-    });
-  </script>
-
 </body>
 </html>
