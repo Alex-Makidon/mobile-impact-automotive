@@ -227,28 +227,7 @@
 
   <!-- Reviews rotator -->
   <script>
-  (function(){
-    const rotator = document.querySelector('.reviews-rotator');
-    if(!rotator) return;
-    const cards = Array.from(rotator.querySelectorAll('.review-card'));
-    if(cards.length === 0) return;
-
-    let dotsWrap = rotator.querySelector('.review-dots');
-    dotsWrap.innerHTML = '';
-    let i = Math.max(0, cards.findIndex(c => c.classList.contains('active')));
-    cards.forEach((c, idx) => c.id = 'review-'+idx);
-
-    function lockHeight(){
-      const h = Math.max(...cards.map(c => (c.style.position='relative', c.offsetHeight)));
-      rotator.style.height = h + 'px';
-      cards.forEach(c => c.style.position='absolute');
-      const dotsH = (dotsWrap?.offsetHeight || 0) + 20;
-      rotator.style.paddingBottom = Math.max(56, dotsH) + 'px';
-    }
-    window.addEventListener('load', lockHeight);
-    window.addEventListener('resize', lockHeight);
-    lockHeight();
-
+ 
     cards.forEach((_, idx) => {
       const dot = document.createElement('button');
       dot.type = 'button';
@@ -259,8 +238,38 @@
       dot.addEventListener('click', () => go(idx, true));
       dotsWrap.appendChild(dot);
     });
+function lockHeight() {
+  // measure tallest card
+  const h = Math.max(...cards.map(c => {
+    c.style.position = 'relative';
+    return c.offsetHeight;
+  }));
+  rotator.style.height = h + 'px';
+  cards.forEach(c => c.style.position = 'absolute');
 
-    function go(next, user=false){
+  // ensure room for dots
+  const dotsH = (dotsWrap?.offsetHeight || 0) + 20;
+  rotator.style.paddingBottom = Math.max(56, dotsH) + 'px';
+}
+
+// also re-measure after fonts/resize/orientation
+window.addEventListener('load', lockHeight);
+window.addEventListener('resize', lockHeight);
+window.addEventListener('orientationchange', lockHeight);
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(lockHeight);
+}
+
+// when changing slides, re-lock height
+function go(next, user=false){
+  cards[i].classList.remove('active');
+  dotsWrap.children[i].setAttribute('aria-selected','false');
+  i = (next + cards.length) % cards.length;
+  cards[i].classList.add('active');
+  dotsWrap.children[i].setAttribute('aria-selected','true');
+  lockHeight();                    // <— important
+  if(user) restart();
+}    function go(next, user=false){
       cards[i].classList.remove('active');
       dotsWrap.children[i].setAttribute('aria-selected','false');
       i = (next + cards.length) % cards.length;
