@@ -92,29 +92,31 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 .btn-outline:hover{background:#fff;color:var(--navy)}
 .site-header .btn-primary{background:transparent;color:#fff;border:2px solid #fff;border-radius:10px}
 .site-header .btn-primary:hover{background:#fff;color:var(--navy)}
+
+/* tighten nav on smaller screens */
 @media (max-width:600px){
   .nav a{font-size:15px}
   .site-header .btn-primary{padding:8px 14px}
-/* Make the mobile nav fit without clipping on iPhone widths */
+}
 @media (max-width: 480px){
   .site-header{
-    padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
-    padding-right: max(10px, env(safe-area-inset-right, 0px)) !important;
+    padding-right: calc(max(12px, env(safe-area-inset-right, 0px)) + 12px) !important;
+    padding-left:  max(12px, env(safe-area-inset-left, 0px)) !important;
   }
-  .header-inner{
-    grid-template-columns: auto 1fr; /* logo | nav */
-    gap: 10px;
-  }
+  .header-inner{ gap: 10px; }
   .nav{
-    justify-self: start;
-    gap: 12px;                    /* slightly tighter spacing */
-    overflow-x: auto;             /* allows smooth side scroll if needed */
+    gap: 10px;
+    overflow-x: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
   }
+  .site-header .btn-primary{
+    padding: 7px 10px;
+    font-size: 14px;
+    line-height: 1;
+    border-radius: 9px;
+  }
   .nav a{ font-size: 15px; line-height: 1; }
-  .site-header .btn-primary{ padding: 8px 12px; } /* slimmer “Call Now” */
-}  
 }
 
 /* =============== */
@@ -150,44 +152,14 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
   100%{transform:translateX(0) rotate(0)}
 }
 
-/* Bigger, higher tire smoke */
-.car-drive .tire-smoke{
-  position:absolute; pointer-events:none; z-index:3;
-  left:clamp(10px,1.2vw,22px);
-  bottom:clamp(78px,8.2vw,120px);  /* higher */
-  display:flex; gap:clamp(8px,1.2vw,16px);
-  will-change:transform,opacity;
-}
-.car-drive .tire-smoke i{
-  display:block;
-  width:clamp(72px,11vw,150px);   /* bigger */
-  height:clamp(52px,9vw,110px);   /* bigger */
-  border-radius:50%;
-  background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0) 70%);
-  opacity:0; filter:blur(2.4px);
-  animation:tire-smoke-puff 2.6s ease-out both;  /* lingers longer */
-}
+/* tire smoke / exhaust / skid ... (unchanged for brevity) */
+.car-drive .tire-smoke{position:absolute;pointer-events:none;z-index:3;left:clamp(10px,1.2vw,22px);bottom:clamp(78px,8.2vw,120px);display:flex;gap:clamp(8px,1.2vw,16px);will-change:transform,opacity}
+.car-drive .tire-smoke i{display:block;width:clamp(72px,11vw,150px);height:clamp(52px,9vw,110px);border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0) 70%);opacity:0;filter:blur(2.4px);animation:tire-smoke-puff 2.6s ease-out both}
 .page-loaded .tire-smoke i:nth-child(1){animation-delay:.12s}
 .page-loaded .tire-smoke i:nth-child(2){animation-delay:.52s}
 .page-loaded .tire-smoke i:nth-child(3){animation-delay:.92s}
-@keyframes tire-smoke-puff{
-  0%{opacity:.9; transform:translate(-10px,8px) scale(.95)}
-  35%{opacity:.75; transform:translate(-32px,-4px) scale(1.2)}
-  70%{opacity:.45; transform:translate(-78px,-26px) scale(1.65)}
-  100%{opacity:0; transform:translate(-112px,-46px) scale(2.05)}
-}
-
-/* Exhaust puffs */
-.exhaust{
-  position:absolute; z-index:0;
-  left:clamp(-14px,-1.2vw,-6px);
-  bottom:clamp(36px,4.6vw,54px);
-  width:clamp(18px,2.6vw,28px);
-  height:clamp(18px,2.6vw,28px);
-  border-radius:50%;
-  background:radial-gradient(closest-side,rgba(255,255,255,.9),rgba(255,255,255,0) 70%);
-  opacity:0; filter:blur(.7px);
-}
+@keyframes tire-smoke-puff{0%{opacity:.9;transform:translate(-10px,8px) scale(.95)}35%{opacity:.75;transform:translate(-32px,-4px) scale(1.2)}70%{opacity:.45;transform:translate(-78px,-26px) scale(1.65)}100%{opacity:0;transform:translate(-112px,-46px) scale(2.05)}}
+.exhaust{position:absolute;z-index:0;left:clamp(-14px,-1.2vw,-6px);bottom:clamp(36px,4.6vw,54px);width:clamp(18px,2.6vw,28px);height:clamp(18px,2.6vw,28px);border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.9),rgba(255,255,255,0) 70%);opacity:0;filter:blur(.7px)}
 .page-loaded .exhaust{animation:exhaust1 1.3s ease-out .22s both}
 .exhaust::before,.exhaust::after{content:"";position:absolute;inset:0;border-radius:50%;background:inherit;opacity:0;filter:blur(.7px)}
 .page-loaded .exhaust::before{animation:exhaust2 1.4s ease-out .34s both}
@@ -195,26 +167,10 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 @keyframes exhaust1{0%{transform:translate(-6px,8px) scale(.6);opacity:0}25%{opacity:.55}100%{transform:translate(-48px,-6px) scale(1.5);opacity:0}}
 @keyframes exhaust2{0%{transform:translate(-4px,10px) scale(.5);opacity:0}30%{opacity:.5}100%{transform:translate(-58px,-10px) scale(1.7);opacity:0}}
 @keyframes exhaust3{0%{transform:translate(-2px,12px) scale(.45);opacity:0}35%{opacity:.45}100%{transform:translate(-68px,-14px) scale(1.9);opacity:0}}
-
-/* Skid */
-.skid{ position:absolute; z-index:0; left:clamp(28px,2.4vw,40px); bottom:clamp(28px,3.6vw,42px);
-  height:2px;width:0;border-radius:2px;
-  background:linear-gradient(90deg,rgba(20,26,38,.35),rgba(20,26,38,0));
-  opacity:0;filter:blur(.6px);pointer-events:none;
-}
+.skid{position:absolute;z-index:0;left:clamp(28px,2.4vw,40px);bottom:clamp(28px,3.6vw,42px);height:2px;width:0;border-radius:2px;background:linear-gradient(90deg,rgba(20,26,38,.35),rgba(20,26,38,0));opacity:0;filter:blur(.6px);pointer-events:none}
 .page-loaded .skid{animation:skid-line .75s cubic-bezier(.22,.9,.26,1) .55s both}
-@keyframes skid-line{
-  0%{width:0;opacity:0;transform:translateX(0)}
-  45%{width:clamp(110px,14vw,190px);opacity:.65;transform:translateX(6px)}
-  100%{width:clamp(130px,16vw,220px);opacity:0;transform:translateX(12px)}
-}
-
-/* Optional hero text fade-in */
+@keyframes skid-line{0%{width:0;opacity:0;transform:translateX(0)}45%{width:clamp(110px,14vw,190px);opacity:.65;transform:translateX(6px)}100%{width:clamp(130px,16vw,220px);opacity:0;transform:translateX(12px)}}
 .page-loaded .hero-text>*{animation:hero-fade-up .6s ease both}
-.page-loaded .hero-text>*:nth-child(1){animation-delay;.25s}
-.page-loaded .hero-text>*:nth-child(2){animation-delay;.35s}
-.page-loaded .hero-text>*:nth-child(3){animation-delay;.45s}
-.page-loaded .hero-text>*:nth-child(4){animation-delay;.55s}
 @keyframes hero-fade-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* =============== */
@@ -236,25 +192,7 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 .card h3{margin:0 0 6px;font-size:18px}
 
 /* =============== */
-/*       Team      */
-/* =============== */
-.team .person{
-  display:grid; grid-template-columns:120px 1fr; gap:18px; align-items:center;
-  background:#fff; border:1px solid #e6ecf5; border-radius:14px; padding:18px;
-}
-.team .avatar{ width:120px; height:120px; border-radius:999px; overflow:hidden; background:#e9edf5; }
-.team .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
-.team .bio h3{ margin:0 0 4px; }
-.team .bio .title{ margin:0 0 8px; color:#516079; font-weight:600; }
-.team .badges{ display:flex; gap:8px; margin:10px 0 0; padding:0; list-style:none; flex-wrap:wrap; }
-.team .badges li{ background:#eef3ff; color:#0b2a56; border:1px solid #dbe6ff; border-radius:999px; padding:6px 10px; font-weight:600; font-size:12px; }
-@media (max-width:600px){
-  .team .person{ grid-template-columns:1fr; text-align:center; }
-  .team .avatar{ margin:0 auto; }
-}
-
-/* =============== */
-/*     Reviews     */
+/*       Reviews   */
 /* =============== */
 .reviews-wrapper{display:flex;align-items:flex-start;justify-content:space-between;gap:30px}
 @media (max-width:768px){ .reviews-wrapper{flex-direction:column;text-align:center;align-items:center} }
@@ -279,7 +217,6 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 /* =============== */
 /*     Gallery     */
 /* =============== */
-/* Fresh swipe rail; NO buttons outside the lightbox */
 .gallery-wrap{ position:relative; margin-top:10px; }
 .gallery-rail{
   display:grid; grid-auto-flow:column; grid-auto-columns:min(85vw, 360px);
@@ -331,174 +268,22 @@ img,iframe{max-width:100%}
 .tagline{opacity:.85}
 
 /* =============== */
+/*  Meet the Owner */
+/* =============== */
+#owner.section { background:#fff; }
+.owner-wrap{ display:grid; grid-template-columns: 0.95fr 1.05fr; gap:20px; align-items:center; }
+.owner-photo{ background:#e9edf5; border:1px solid #e6ecf5; border-radius:14px; overflow:hidden; aspect-ratio: 4 / 5; max-height: 520px; box-shadow:0 2px 6px rgba(10,20,40,.04); }
+.owner-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 18%; display:block; }
+@media (max-width:900px){ .owner-wrap{ grid-template-columns:1fr; } .owner-photo{ aspect-ratio: 3 / 4; max-height:none; } }
+.owner-content{ background:#fff; border:1px solid #e6ecf5; border-radius:14px; padding:18px; box-shadow:0 2px 6px rgba(10,20,40,.04); }
+.owner-content h2{ font-family:Montserrat,Inter,Arial,Helvetica,sans-serif; font-size:28px; margin:0 0 4px; }
+.owner-name{ margin:0 0 10px; font-weight:700; color:var(--navy); font-size:18px; }
+
+/* =============== */
 /*  Reduced Motion */
 /* =============== */
 @media (prefers-reduced-motion:reduce){
   *{animation:none !important;transition:none !important}
   .car-drive{transform:none !important}
   .exhaust,.tire-smoke i,.skid{opacity:1}
-}
-/* ===== Meet the Owner ===== */
-#owner.section { background:#fff; }
-
-.owner-wrap{
-  display:grid;
-  grid-template-columns: 0.95fr 1.05fr;
-  gap:20px;
-  align-items:center;
-}
-
-/* Frame (container) for the photo */
-.owner-photo{
-  background:#e9edf5;
-  border:1px solid #e6ecf5;
-  border-radius:14px;
-  overflow:hidden;
-  aspect-ratio: 4 / 3;               /* desktop frame */
-  box-shadow:0 2px 6px rgba(10,20,40,.04);
-}
-
-/* Make the <picture> fill the frame */
-.owner-photo picture{
-  display:block;
-  width:100%;
-  height:100%;
-}
-
-/* Make the <img> fill, and anchor crop to the top so head is visible */
-.owner-photo-img{
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position: top center;       /* <-- keeps head in frame */
-  border-radius:12px;                 /* optional: matches card rounding */
-}
-
-/* Text card */
-.owner-content{
-  background:#fff;
-  border:1px solid #e6ecf5;
-  border-radius:14px;
-  padding:18px;
-  box-shadow:0 2px 6px rgba(10,20,40,.04);
-}
-.owner-content h2{
-  font-family:Montserrat,Inter,Arial,Helvetica,sans-serif;
-  font-size:28px;
-  margin:0 0 4px;
-}
-.owner-name{
-  margin:0 0 10px;
-  font-weight:700;
-  color:var(--navy);
-  font-size:18px;
-}
-
-/* Stack on smaller screens and use a wider frame */
-@media (max-width:900px){
-  .owner-wrap{ grid-template-columns:1fr; }
-  .owner-photo{ aspect-ratio: 16 / 9; }
-}
-/* Owner photo focal point (show the face) */
-.owner-photo picture { display:block; width:100%; height:100%; }
-.owner-photo picture > img.owner-photo-img{
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit: cover;
-  /* Desktop/tablet: show upper-middle */
-  object-position: 50% 28% !important;
-}
-
-/* Phones: image is taller in the card → push focal point lower */
-@media (max-width: 900px){
-  .owner-photo picture > img.owner-photo-img{
-    object-position: 50% 42% !important;
-  }
-}
-/* Loosen the frame for owner photo */
-.owner-photo {
-  aspect-ratio: auto;      /* let height grow with the image */
-  height: auto;
-}
-
-.owner-photo picture > img.owner-photo-img {
-  width: 100%;
-  height: auto;            /* stop forcing the crop */
-  object-fit: contain;     /* show the whole image */
-  object-position: center center;
-}
-/* Owner photo tweaks */
-.owner-photo {
-  background:#e9edf5;
-  border:1px solid #e6ecf5;
-  border-radius:14px;
-  overflow:hidden;
-  aspect-ratio: 3 / 4;     /* Taller than wide, but shorter than full height */
-  max-height: 500px;       /* Keeps it from dominating the section */
-  box-shadow:0 2px 6px rgba(10,20,40,.04);
-}
-
-.owner-photo img {
-  width:100%;
-  height:100%;
-  object-fit: cover;
-  object-position: center top;  /* Crops more from the bottom, keeps face visible */
-  display:block;
-}
-/* Owner photo – tighter desktop crop, keep more on phones */
-.owner-photo{
-  background:#e9edf5;
-  border:1px solid #e6ecf5;
-  border-radius:14px;
-  overflow:hidden;
-  aspect-ratio: 4 / 5;    /* a touch shorter than full body */
-  max-height: 520px;      /* keeps it from dominating the row */
-  box-shadow:0 2px 6px rgba(10,20,40,.04);
-}
-.owner-photo img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center 18%; /* bias slightly toward the head */
-  display:block;
-}
-
-/* On phones, show a bit more (less aggressive crop) */
-@media (max-width: 600px){
-  .owner-photo{
-    aspect-ratio: 3 / 4;  /* taller on mobile */
-    max-height: none;
-  }
-  .owner-photo img{
-    object-position:center 10%;
-  }
-}
-/* --- iPhone fix: keep "Call Now" fully visible --- */
-@media (max-width: 480px){
-  /* extra space on the right edge (beyond the safe-area) */
-  .site-header{
-    padding-right: calc(max(12px, env(safe-area-inset-right, 0px)) + 12px) !important;
-    padding-left:  max(12px, env(safe-area-inset-left, 0px)) !important;
-  }
-
-  /* slightly tighter nav spacing + allow gentle sideways scroll if needed */
-  .nav{
-    gap: 10px;
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* slimmer, slightly smaller "Call Now" button so it never clips */
-  .site-header .btn-primary{
-    padding: 7px 10px;
-    font-size: 14px;
-    line-height: 1;
-    border-radius: 9px;
-  }
-
-  /* keep link text a touch smaller too */
-  .nav a{ font-size: 15px; line-height: 1; }
 }
