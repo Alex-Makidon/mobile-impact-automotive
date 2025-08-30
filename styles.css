@@ -300,3 +300,10 @@ img,iframe{max-width:100%}
   position: absolute;
   left: 0; right: 0; bottom: 10px;   /* keep a little breathing room */
 }
+
+/* Reviews: extra space on phones so CTA never crowds dots */
+@media (max-width: 540px){
+  .reviews-rotator{ padding-bottom: 84px; margin-bottom: 16px; }
+  .reviews-wrapper{ gap: 22px; } /* a bit more space between rotator and CTA */
+  .review-cta{ align-self: center; } /* center the button under the rotator */
+}
