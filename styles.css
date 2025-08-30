@@ -319,30 +319,43 @@ img,iframe{max-width:100%}
   .exhaust,.tire-smoke i,.skid{opacity:1}
 }
 /* ===== Meet the Owner ===== */
-#owner.section { background:#fff; } /* matches standard section look */
+#owner.section { background:#fff; }
 
 .owner-wrap{
   display:grid;
-  grid-template-columns: 0.95fr 1.05fr; /* photo : text */
-  gap: 20px;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap:20px;
   align-items:center;
 }
 
+/* Frame (container) for the photo */
 .owner-photo{
   background:#e9edf5;
   border:1px solid #e6ecf5;
   border-radius:14px;
   overflow:hidden;
-  aspect-ratio: 4 / 3;       /* keeps a nice frame even before image loads */
+  aspect-ratio: 4 / 3;               /* desktop frame */
   box-shadow:0 2px 6px rgba(10,20,40,.04);
 }
-.owner-photo img{
+
+/* Make the <picture> fill the frame */
+.owner-photo picture{
+  display:block;
+  width:100%;
+  height:100%;
+}
+
+/* Make the <img> fill, and anchor crop to the top so head is visible */
+.owner-photo-img{
+  display:block;
   width:100%;
   height:100%;
   object-fit:cover;
-  display:block;
+  object-position: top center;       /* <-- keeps head in frame */
+  border-radius:12px;                 /* optional: matches card rounding */
 }
 
+/* Text card */
 .owner-content{
   background:#fff;
   border:1px solid #e6ecf5;
@@ -362,16 +375,8 @@ img,iframe{max-width:100%}
   font-size:18px;
 }
 
-@media (max-width: 900px){
-  .owner-wrap{
-    grid-template-columns:1fr;  /* stack on tablets/phones */
-  }
+/* Stack on smaller screens and use a wider frame */
+@media (max-width:900px){
+  .owner-wrap{ grid-template-columns:1fr; }
   .owner-photo{ aspect-ratio: 16 / 9; }
-}
-.owner-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center; /* bias crop to top */
-  border-radius: 12px;
 }
