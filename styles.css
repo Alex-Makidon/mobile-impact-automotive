@@ -287,3 +287,16 @@ img,iframe{max-width:100%}
   .car-drive{transform:none !important}
   .exhaust,.tire-smoke i,.skid{opacity:1}
 }
+
+/* Reviews: ensure dots never cover text */
+.reviews-rotator{
+  position: relative;
+  padding-bottom: 56px;   /* was 36px */
+}
+@media (max-width: 540px){
+  .reviews-rotator{ padding-bottom: 72px; }
+}
+.review-dots{
+  position: absolute;
+  left: 0; right: 0; bottom: 10px;   /* keep a little breathing room */
+}
