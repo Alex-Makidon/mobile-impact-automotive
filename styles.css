@@ -95,6 +95,26 @@ html{ scroll-padding-top: calc(var(--header-h) + var(--safe-top)); }
 @media (max-width:600px){
   .nav a{font-size:15px}
   .site-header .btn-primary{padding:8px 14px}
+/* Make the mobile nav fit without clipping on iPhone widths */
+@media (max-width: 480px){
+  .site-header{
+    padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(10px, env(safe-area-inset-right, 0px)) !important;
+  }
+  .header-inner{
+    grid-template-columns: auto 1fr; /* logo | nav */
+    gap: 10px;
+  }
+  .nav{
+    justify-self: start;
+    gap: 12px;                    /* slightly tighter spacing */
+    overflow-x: auto;             /* allows smooth side scroll if needed */
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav a{ font-size: 15px; line-height: 1; }
+  .site-header .btn-primary{ padding: 8px 12px; } /* slimmer “Call Now” */
+}  
 }
 
 /* =============== */
