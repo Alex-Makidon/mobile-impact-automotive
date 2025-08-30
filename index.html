@@ -239,10 +239,18 @@
     let i = Math.max(0, cards.findIndex(c => c.classList.contains('active')));
     cards.forEach((c, idx) => c.id = 'review-'+idx);
 
-    function lockHeight(){
-      const h = Math.max(...cards.map(c => (c.style.position='relative', c.offsetHeight)));
-      rotator.style.height = h + 'px';
-      cards.forEach(c => c.style.position='absolute');
+    function lockHeight() {
+  // measure tallest review card
+  const h = Math.max(...cards.map(c => (c.style.position='relative', c.offsetHeight)));
+  rotator.style.height = h + 'px';
+
+  // stack cards in place
+  cards.forEach(c => c.style.position = 'absolute');
+
+  // adjust bottom padding so dots never overlap
+  const dotsH = (dotsWrap?.offsetHeight || 0) + 20;
+  rotator.style.paddingBottom = Math.max(56, dotsH) + 'px';
+}
     }
     window.addEventListener('load', lockHeight);
     window.addEventListener('resize', lockHeight);
